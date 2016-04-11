@@ -101,6 +101,7 @@ Formula.addFunction('PARSE_COMPLEXNUMBER', function(s) {
 });
 ```
 
+Actually, the functions for handling complex numbers have been added in this repository, so to use them, all you have to do is include "datatypes/ComplexNumber.js". More data types will come.
 
 
 

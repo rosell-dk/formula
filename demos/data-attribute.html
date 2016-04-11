@@ -19,8 +19,15 @@ jQuery(function() {
   $('[data-formula]').each(function() {
     var $field = $(this);
     var formula = new Formula($(this).attr('data-formula'), function() {
+      var oldValue = $field.val();
       $field.val(formula.calc());
+      if (oldValue != $field.val()) {
+        // Trigger change, in case another formula is listening
+        $field.trigger('change');
+      }      
     });
+    formula.s = $(this).attr('data-formula');
+
     $field.val(formula.calc());
   });
 
@@ -39,7 +46,7 @@ jQuery(function() {
   <p>
   Here is a little demo which shows you how to convieniently create calculated fields.
 
-  The formulas below have been set in a "data-formula" attribute of the input fields. The fields are recalculated dynamically, when needed.</p>
+  The formulas below have been set in a "data-formula" attribute of the input fields. The fields are recalculated dynamically, when the value of a referenced field changes</p>
 
   <div>    
     <label for="formula1">formula1:</label>
@@ -61,7 +68,7 @@ jQuery(function() {
     <i>Formula: ADD_TWO_NUMBERS(#formula2,#custom_number)</i>
   </div>
 
-  <p>All that was required to set this up is the following script:</p>
+  <p>All that is required to set this up this is the following script:</p>
   <pre>
 jQuery(function() {
   $('[data-formula]').each(function() {
@@ -73,6 +80,31 @@ jQuery(function() {
   });
 });
   </pre>
+
+  <p>If you also want formulas referencing formulas dynamically recalculated, you can do it like this:</p>
+  <div>
+    <label for="formula4">formula4:</label>
+    <input id="formula4" data-formula="#formula3" readonly></input>
+    <i>Formula: #formula3</i>
+  </div>
+  
+  <pre>  
+  $('[data-formula]').each(function() {
+    var $field = $(this);
+    var formula = new Formula($(this).attr('data-formula'), function() {
+      var oldValue = $field.val();
+      $field.val(formula.calc());
+      if (oldValue != $field.val()) {
+        // Trigger change, in case another formula is listening
+        $field.trigger('change');
+      }      
+    });
+    formula.s = $(this).attr('data-formula');
+
+    $field.val(formula.calc());
+  });
+  </pre>
+
 
 </body>
 </html>

@@ -23,7 +23,8 @@ Formula.prototype.calc = function() {
   return this.formulaObject.calc();
 }
 
-Formula.prototype.referenceChanged = function() {
+Formula.prototype.referenceChanged = function(reference) {
+  console.log('Formula.referenceChanged() called. New value:' + reference);
   this.resultChangedCallBack();
 }
 
@@ -218,7 +219,7 @@ Formula.Fragment.prototype.addChangeHandlers = function(formula) {
     // Handle reference
     else if (typeof p['setChangeCallback'] === 'function') {
       p.setChangeCallback(function() {
-        formula.referenceChanged($(this));
+        formula.referenceChanged(this);
       });
     }
   }

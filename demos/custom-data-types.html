@@ -3,19 +3,20 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>formula demo</title>
-<script src="../formula.js"></script>
-<script src="../formula/datatype/ComplexNumber.js"></script>
+<title>formula demo!</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script src="../formula.js"></script>
+<script src="../library/datatypes/ComplexNumber.js"></script>
+<script src="../library/referencetypes/InputById.js"></script>
 <script>
 
 
 
 jQuery(function() {
 
-  var formula1 = new Formula('ADD_TWO_COMPLEX_NUMBERS(COMPLEXNUMBER(10,10),COMPLEXNUMBER(1,16))').calc();
+  var formula1 = new Formula('ADD_TWO_COMPLEX_NUMBERS(COMPLEXNUMBER(10,10),COMPLEXNUMBER(1,16))');
   var complexNumber = formula1.calc();
-  alert(complexNumber.a);
+  alert(complexNumber.toString());
 
   var simpleFormula1 = new Formula('FORMAT_COMPLEX_NUMBER(ADD_TWO_COMPLEX_NUMBERS(COMPLEXNUMBER(10,10),COMPLEXNUMBER(1,16)))');
   $('#result').val(simpleFormula1.calc());

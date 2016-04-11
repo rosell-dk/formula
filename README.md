@@ -11,7 +11,7 @@ Formula.addFunction('ADD_TWO_NUMBERS', function(a, b) {
 ```
 
 ## Creating a formula
-A formula is created with the Formula constructo, which takes the formula as an argument, and optionally a callback, which we will be called whenever the result changes, due to a reference that has changed (we will get to references in a minute)
+A formula is created with the Formula constructor, which takes the formula as an argument, and optionally a callback, which we will be called whenever the result changes, due to a reference that has changed (we will get to references in a minute)
 
 ```javascript
   var simpleFormula = new Formula('ADD_TWO_NUMBERS(0.1,9)', changeCallback);

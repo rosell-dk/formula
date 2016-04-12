@@ -15,12 +15,12 @@ var Formula = function(formula, resultChangedCallBack) {
 
   }, 100);
 
-  this.formulaObject = Formula.parseFormula(formula);
-  this.formulaObject.addChangeHandlers(this);
+  this.formulaFragment = Formula.parseFormula(formula);
+  this.formulaFragment.addChangeHandlers(this);
 }
 
 Formula.prototype.calc = function() {
-  return this.formulaObject.calc();
+  return this.formulaFragment.calc();
 }
 
 Formula.prototype.referenceChanged = function(reference) {

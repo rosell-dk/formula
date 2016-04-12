@@ -68,21 +68,26 @@ These will return boolean true:</p>
 MOMENT_TEST_DATE_FORMAT('12-24-2014', 'MM-DD-YYYY') <br>
 MOMENT_TEST_DATE_FORMAT('2/14-2014', 'M/D-YYYY') <br>
 MOMENT_TEST_DATE_FORMAT('banana 2/24 2014', 'banana M/DD YYYY')<br>
-<p>This will return false:</p>
-MOMENT_TEST_DATE_FORMAT('2/14-2014', 'M-D-YYYY') <br>
+<p>These will return false:</p>
+MOMENT_TEST_DATE_FORMAT('2/14/2014', 'M-D-YYYY') <br>
+MOMENT_TEST_DATE_FORMAT('02-14-2014', 'M-D-YYYY') <br>
+MOMENT_TEST_DATE_FORMAT('2-14-2014', 'MM-D-YYYY') <br>
+MOMENT_TEST_DATE_FORMAT('02-02-2014', 'MM-D-YYYY') <br>
+MOMENT_TEST_DATE_FORMAT('02-32-2014', 'MM-DD-YYYY') <br>
 <p>Note: ONLY the following tokens are supported: MM, DD, YYYY, D, M</p>
+Note: DD accepts 01, 02, .. 31. So it accepts '31' even for months that do not have 31 days in them.
 
 Test this date string: <input id="parse_date" value="12-24-2018"></input><br>
 against this format:  <input id="parse_format" value="MM-DD-YYYY"></input><br>
-Result: <input data-formula="IF(MOMENT_TEST_DATE_FORMAT(#parse_date, #parse_format), 'ok', 'not ok')" readonly></input><i></i><br>
-Result as date: <input data-formula="IF(MOMENT_TEST_DATE_FORMAT(#parse_date, #parse_format), MOMENT_FORMAT(MOMENT(#parse_date, #parse_format), 'DD MMM YYYY'), 'whopsie - not a wellformatted date')" readonly></input><i></i><br>
+Result: <input data-formula="IF(MOMENT_TEST_DATE_FORMAT(#parse_date, #parse_format), 'ok', 'not ok')" readonly></input><br>Formula:<i>IF(MOMENT_TEST_DATE_FORMAT(#parse_date, #parse_format), 'ok', 'not ok')</i><br><br>
+Result as date: <input data-formula="IF(MOMENT_TEST_DATE_FORMAT(#parse_date, #parse_format), MOMENT_FORMAT(MOMENT(#parse_date, #parse_format), 'DD MMM YYYY'), 'whopsie - not a wellformatted date')" readonly></input><br>Formula:<i>IF(MOMENT_TEST_DATE_FORMAT(#parse_date, #parse_format), MOMENT_FORMAT(MOMENT(#parse_date, #parse_format), 'DD MMM YYYY'), 'whopsie - not a wellformatted date')</i><br>
 <!--<input data-formula="MOMENT_FORMAT(MOMENT_STRICT_PARSE(#parse_date, #parse_format), 'DD MMM YYYY')" readonly></input><i></i><br>-->
 
 
 
 
 <h3>Not more?</h3>
-momentjs has much more functionality than utilized by the few functions we have added here. You are very welcome to help adding more functions.
+momentjs has much more functionality than utilized by the few functions I have added. You are very welcome to help adding more functions. Or you can pay me to do so (you can reach me here: <a href="http://rosell.dk/contact">http://rosell.dk/contact</a>).
 
 </body>
 </html>

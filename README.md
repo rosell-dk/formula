@@ -64,27 +64,9 @@ var formula1 = new Formula('ADD_TWO_COMPLEX_NUMBERS(COMPLEXNUMBER(10,10),COMPLEX
 var result = formula.calc();    // result is a ComplexNumber object
 ```
 
-You might also consider adding functions for fomatting and parsing your data type. Like this:
+You might also consider adding functions for fomatting and parsing your data type. Though, in many cases, you may prefer not to do the formatting with the formula, but after the formula has run; - the unformatted value is often "more worth".
 
-```javascript
-Formula.addFunction('FORMAT_COMPLEX_NUMBER', function(cn) {
-  if (cn.b > 0) {
-    return '(' + cn.a + ' + ' + cn.b + 'i)';
-  }
-  return '(' + cn.a + ' - ' + (-cn.b) + 'i)';
-});
-
-Formula.addFunction('PARSE_COMPLEXNUMBER', function(s) {
-  var re = /\(([+-]?[0-9.]*)\s*([+-])\s*([0-9.]*)\s*i\s*\)/
-  var result = re.exec(s);
-  if ((result != null) && (result.length == 4)) {
-    return new ComplexNumber(parseFloat(result[1]), parseFloat(result[2]+result[3]));
-  }
-  return 'not a complex number';
-});
-```
-
-Actually, the functions for handling complex numbers have been added in this repository, so to use them, all you have to do is include "datatypes/ComplexNumber.js". More data types will come.
+As data types and their related functions are created, they will be added in the "library/datatypes" folder of this repository.
 
 
 

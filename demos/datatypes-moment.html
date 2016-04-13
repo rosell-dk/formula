@@ -90,6 +90,12 @@ Formula.addFunction('OBJECT', function() {
 <input data-formula="MOMENT_MONTH(MOMENT())" readonly></input><br>
 <input data-formula="MOMENT_DATE(MOMENT())" readonly></input><br>
 
+<h3>Setting parts of a moment</h3>
+<p>The counterpart of the above...</p>
+
+<p>Set date to first of current month:</p>
+<input data-formula="MOMENT_SET(MOMENT(), 'date', 1)" readonly></input><br>
+
 <h3>Adding units to a moment</h3>
 <p>Here, we add 1 day to current date, and format it</p>
 <input data-formula="MOMENT_FORMAT(MOMENT_ADD(MOMENT(), 1, 'days'), 'DD MMM YYYY')" readonly></input><br>

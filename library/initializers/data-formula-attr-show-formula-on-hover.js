@@ -1,9 +1,8 @@
 /*
 Requires: jQuery
 
-With this initializer, you can conveniently create dynamically calculated fields like this:
-
-<input data-formula="ADD_TWO_NUMBERS(10,11)" readonly></input>
+Use this initializer along with "data-formula-attr.js", to allow viewing a formula of a dynamic input by hovering over it
+Can be used for debugging and demos
 
 */
 

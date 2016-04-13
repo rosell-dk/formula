@@ -119,9 +119,13 @@ Formula.addFunction('SIMPLEDATE_PARSE', function(text, format) {
 // alert(JSON.stringify(result));  
 
   // Now connect the parts
-  var year = 0;
-  var month = 1;
-  var day = 0;
+
+  var now = new Date();
+
+  // default values
+  var year = now.getFullYear();
+  var month = now.getMonth() + 1;
+  var day = now.getDate();
 
   for (var i=1; i<result.length; i++) {
     var token = positions[i-1].token;
@@ -137,6 +141,17 @@ Formula.addFunction('SIMPLEDATE_PARSE', function(text, format) {
         break;
     }
   }
+
+  // Lets check if its a valid date
+  // we do this by setting a Date object, and reading it to see if its what we set it to
+
+  var d = new Date(year, month - 1, day);
+  if ((d.getFullYear() != year) || (d.getMonth() != (month-1)) || (d.getDate() != day) ) {
+    var sd = new SimpleDate();
+    sd.valid = false;
+    return sd;
+  }
+
   return new SimpleDate(year, month, day);
 
 //  return new moment(text, format);

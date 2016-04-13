@@ -70,20 +70,27 @@ To parse a SimpleDate, use SIMPLEDATE_PARSE(date[String], format[String]). You c
 </p>
 Examples:<br>
 <input data-formula="SIMPLEDATE_PARSE('0309-1972', 'DDMM-YYYY')" readonly></input><br>
+<input data-formula="SIMPLEDATE_PARSE('1972-21-2', 'YYYY-D-M')" readonly></input><br>
 <input data-formula="SIMPLEDATE_PARSE('39-1972', 'DM-YYYY')" readonly></input><br>
-<input data-formula="SIMPLEDATE_PARSE('512-1972', 'DM-YYYY')" readonly></input><br>
-<input data-formula="SIMPLEDATE_PARSE('212-1972', 'DM-YYYY')" readonly></input><br>
-<input data-formula="SIMPLEDATE_PARSE('21-2-1972', 'D-M-YYYY')" readonly></input><br>
+Omitting year: <input data-formula="SIMPLEDATE_PARSE('21-02', 'DD-MM')" readonly></input><br>
 
 <p>If parse fails, you will get a SimpleDate object which represents an invalid date.</p>
 Formatting an invalid date results in the string 'Invalid date' (you can change this by setting SimpleDate.invalidDate)
 
 <p>Example:
-<input data-formula="SIMPLEDATE_PARSE('21-2-72', 'D-M-YYYY')" readonly></input><br>
+Parse error: <input data-formula="SIMPLEDATE_PARSE('21-2-72', 'D-M-YYYY')" readonly></input><br>
+Non-existent date: <input data-formula="SIMPLEDATE_PARSE('31-02-1972', 'DD-MM-YYYY')" readonly></input><br>
 </p>
+
 <p>You can test if a date is valid with SIMPLEDATE_IS_VALID:
 <input data-formula="SIMPLEDATE_IS_VALID(SIMPLEDATE_PARSE('21-2-72', 'D-M-YYYY'))" readonly></input>
 </p>
+
+<p>Not tired out yet? try more parsing below:</p>
+Parse this date: <input id="try_date" value="7/14 1995"></input><br>
+Using this format: <input id="try_format" value="D/M YYYY"></input><br>
+Result: <input data-formula="SIMPLEDATE_PARSE(#try_date, #try_format)"></input><br>
+
 
 
 <h3>Getter/setter methods</h3>

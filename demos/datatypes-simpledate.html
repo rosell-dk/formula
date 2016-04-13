@@ -42,26 +42,26 @@ SimpleDate.defaultFormat = 'MM-DD-YYYY';
 <p>SIMPLEDATE(year, month, day) will get you a SimpleDate object. Note that month is not zero-based</p>
 <input data-formula="SIMPLEDATE(2020, 12, 24)" readonly></input><br>
 
-<p>SIMPLEDATE_NOW() will get you today</p>
-<input data-formula="SIMPLEDATE_NOW()" readonly></input><br>
+<p>SIMPLEDATE_TODAY() will get you today</p>
+<input data-formula="SIMPLEDATE_TODAY()" readonly></input><br>
 
 <h3>Formatting</h3>
 
 <p>
 To format a SimpleDate, use SIMPLEDATE_FORMAT(date [SimpleDate], format [String]). You can use the tokens: YYYY, MM, DD, M, D.
 </p>
-YYYY-MM-DD: <input data-formula="SIMPLEDATE_FORMAT(SIMPLEDATE_NOW(), 'YYYY-MM-DD')" readonly></input><br>
-YYYY-M-D: <input data-formula="SIMPLEDATE_FORMAT(SIMPLEDATE_NOW(), 'YYYY-M-D')" readonly></input><br>
-M/D YYYY: <input data-formula="SIMPLEDATE_FORMAT(SIMPLEDATE_NOW(), 'M/D YYYY')" readonly></input><br>
+YYYY-MM-DD: <input data-formula="SIMPLEDATE_FORMAT(SIMPLEDATE_TODAY(), 'YYYY-MM-DD')" readonly></input><br>
+YYYY-M-D: <input data-formula="SIMPLEDATE_FORMAT(SIMPLEDATE_TODAY(), 'YYYY-M-D')" readonly></input><br>
+M/D YYYY: <input data-formula="SIMPLEDATE_FORMAT(SIMPLEDATE_TODAY(), 'M/D YYYY')" readonly></input><br>
 <p>
 You can set up a defalt format by setting SimpleFormat.defaultFormat. In this demo, it has been set to 'MM-DD-YYYY'.
 To format a date using the default format, simply calling SIMPLEDATE_FORMAT(date [SimpleDate]):
 </p>
-Using default format: <input data-formula="SIMPLEDATE_FORMAT(SIMPLEDATE_NOW())" readonly></input><br>
+Using default format: <input data-formula="SIMPLEDATE_FORMAT(SIMPLEDATE_TODAY())" readonly></input><br>
 <p>
 But as the toString method of SimpleDate returns the date formatted using default format, often, there will be no need to do that.
 </p>
-You can simplify the above formula to: <input data-formula="SIMPLEDATE_NOW()" readonly></input><br>
+You can simplify the above formula to: <input data-formula="SIMPLEDATE_TODAY()" readonly></input><br>
 
 
 <h3>Parsing</h3>
@@ -75,11 +75,39 @@ Examples:<br>
 <input data-formula="SIMPLEDATE_PARSE('212-1972', 'DM-YYYY')" readonly></input><br>
 <input data-formula="SIMPLEDATE_PARSE('21-2-1972', 'D-M-YYYY')" readonly></input><br>
 
+<p>If parse fails, you will get a SimpleDate object which represents an invalid date.</p>
+Formatting an invalid date results in the string 'Invalid date' (you can change this by setting SimpleDate.invalidDate)
+
+<p>Example:
+<input data-formula="SIMPLEDATE_PARSE('21-2-72', 'D-M-YYYY')" readonly></input><br>
+</p>
+<p>You can test if a date is valid with SIMPLEDATE_IS_VALID:
+<input data-formula="SIMPLEDATE_IS_VALID(SIMPLEDATE_PARSE('21-2-72', 'D-M-YYYY'))" readonly></input>
+</p>
+
+
+<h3>Getter/setter methods</h3>
+<p>Use SIMPLEDATE_YEAR([SimpleDate]) to get the year. There is also functions for month and day.</p>
+Examples:
+<table>
+<tr><td>SIMPLEDATE_YEAR</td><td><input data-formula="SIMPLEDATE_YEAR(SIMPLEDATE_TODAY())" readonly></input></td></tr>
+<tr><td>SIMPLEDATE_MONTH</td><td><input data-formula="SIMPLEDATE_MONTH(SIMPLEDATE_TODAY())" readonly></input></td></tr>
+<tr><td>SIMPLEDATE_DAY</td><td><input data-formula="SIMPLEDATE_DAY(SIMPLEDATE_TODAY())" readonly></input></td></tr>
+</table>
+<p>Use SIMPLEDATE_SET_YEAR(date [SimpleDate], year [Number]) to set the year. There is also functions for month and day.</p>
+Examples:
+<table>
+<tr><td>SIMPLEDATE_SET_YEAR</td><td><input data-formula="SIMPLEDATE_SET_YEAR(SIMPLEDATE_TODAY(),2000)" readonly></input></td></tr>
+<tr><td>SIMPLEDATE_SET_MONTH</td><td><input data-formula="SIMPLEDATE_SET_MONTH(SIMPLEDATE_TODAY(),1)" readonly></input></td></tr>
+<tr><td>SIMPLEDATE_SET_DAY</td><td><input data-formula="SIMPLEDATE_SET_DAY(SIMPLEDATE_TODAY(),1)" readonly></input></td></tr>
+</table>
 
 <h3>Adding days</h3>
 <p>You can add days with SIMPLEDATE_ADD_DAYS</p>
-Tomorrow: <input data-formula="SIMPLEDATE_ADD_DAYS(SIMPLEDATE_NOW(),21)" readonly></input><br>
-Three weeks ago: <input data-formula="SIMPLEDATE_ADD_DAYS(SIMPLEDATE_NOW(),-21)" readonly></input><br>
+Tomorrow: <input data-formula="SIMPLEDATE_ADD_DAYS(SIMPLEDATE_TODAY(),21)" readonly></input><br>
+Three weeks ago: <input data-formula="SIMPLEDATE_ADD_DAYS(SIMPLEDATE_TODAY(),-21)" readonly></input><br>
+
+
 
 
 </body>

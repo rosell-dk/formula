@@ -6,8 +6,10 @@ function SimpleDate(year, month, day) {
   this.year = year;
   this.month = month;   // month is NOT zero-based
   this.day = day;
+  this.valid = true;
 }
 SimpleDate.defaultFormat = 'MM-DD-YYYY';
+SimpleDate.invalidDate = 'Invalid date';
 
 SimpleDate.prototype.toString = function() {
   return this.format();
@@ -22,6 +24,9 @@ SimpleDate.prototype.toDate = function() {
  *
  */
 SimpleDate.prototype.format = function(format) {
+  if (!this.valid) {
+    return SimpleDate.invalidDate;
+  }
   if (format === undefined) {
     format = SimpleDate.defaultFormat;
   }
@@ -79,8 +84,10 @@ Formula.addFunction('SIMPLEDATE_PARSE', function(text, format) {
   var re = new RegExp(f);
   var result = text.match(re);
   if (result == null) {
-    alert('could not parse "' + text + '" according to format: "' + format + '"');
-    return result;
+//    alert('could not parse "' + text + '" according to format: "' + format + '"');
+    var sd = new SimpleDate();
+    sd.valid = false;
+    return sd;
   }
   // We now have the parts in [1], [2], etc.
   // The order of these parts are the order in which they occured.
@@ -136,10 +143,17 @@ Formula.addFunction('SIMPLEDATE_PARSE', function(text, format) {
 
 });
 
+Formula.addFunction('SIMPLEDATE_IS_VALID', function(sd) {
+  return sd.valid;
+});
 
-Formula.addFunction('SIMPLEDATE_NOW', function(sd) {
+Formula.addFunction('SIMPLEDATE_TODAY', function() {
   var d = new Date();
-//alert(d.getYear());
+  return new SimpleDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
+});
+
+Formula.addFunction('SIMPLEDATE_NOW', function() {
+  var d = new Date();
   return new SimpleDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
 });
 
@@ -155,6 +169,21 @@ Formula.addFunction('SIMPLEDATE_MONTH', function(sd) {
 
 Formula.addFunction('SIMPLEDATE_YEAR', function(sd) {
   return sd.year;
+});
+
+Formula.addFunction('SIMPLEDATE_SET_DAY', function(sd, day) {
+  sd.day = day;
+  return sd;
+});
+
+Formula.addFunction('SIMPLEDATE_SET_MONTH', function(sd, month) {
+  sd.month = month;
+  return sd;
+});
+
+Formula.addFunction('SIMPLEDATE_SET_YEAR', function(sd, year) {
+  sd.year = year;
+  return sd;
 });
 
 Formula.addFunction('SIMPLEDATE_ADD_DAYS', function(sd, daysToAdd) {

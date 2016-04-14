@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SimpleDate demo</title>
+<title>jQuery datatype</title>
 
 <script src="../formula.js"></script>
 
@@ -34,17 +34,24 @@
 <body>
 <h2>Examples of jQuery functions<span class="subheading monospace"><br>/library/datatypes/JQuery.js</span></h2>
 
-<h3>Creating a jQuery object</h3>
-<p>You can create a jQuery object with the "$" function. It reflects the jQuery constructor - the arguments are simply passed. The constructor has several signatures. You can read the full details in the jquery docs <a href="http://api.jquery.com/jquery/">here</a></p>
-<p>Most commonly, however, you will simply call it with a selector ([String]). For example: $('#id') or $('[name=oranges]')</p>
-<p>Here is how the formula is added:</p>
+<h2>Creating a jQuery object</h2>
+<h3>$(a,b)</h3>
 <pre>
 Formula.addFunction('$', function(a, b) {
   return $(a,b);
 });
 </pre>
+<p>You can create a jQuery object with the "$" function. It reflects the jQuery constructor - the arguments are simply passed. The constructor has several signatures. You can read the full details in the jquery docs <a href="http://api.jquery.com/jquery/">here</a></p>
+<p>Most commonly, however, you will simply call it with a selector ([String]). For example: $('#id') or $('[name=oranges]')</p>
+<p>Here is how the formula is added:</p>
+<h3>$$(a,b)</h3>
+<p>
+Often, you will want your formula to trigger a change event, when one of your referenced fields change.
+For that, the library provides a "$$" function, which does what the "$" function does AND adds eventhandler to the field, the first time it is calculated. So, if you are going to use that, make sure that the formula gets calculated at init. The <a href="initializers-data-formula.html">data-formula-attr</a> initializer does that, by the way.
+</p>
+<p>Alternatively, you can use the jQuery <i>reference type</i> instead (demo available <a href="referencetypes-jquerynodeselector.html">here</a>). Reference types are always bound.</p>
 
-
+<h2>Using the jQuery object</h2>
 <h3>$VAL</h3>
 <p>Once we got a jQuery object, we can use the other functions to do something with it.
 $VAL returns the result of a "val()" call.</p>
@@ -54,8 +61,15 @@ Source: <input type="text" id="textinputid" value="some text"></input><br>
 Target: <input data-formula="$VAL($('#textinputid'))" readonly></input><br>
 <p>(hover the target field to view the formula)</p>
 
-<p>Note that the formula is NOT recalculated automatically, when the value in the source field changes! For that to happen, changeHandlers need to be added.
-To have change handlers added for you, you can instead use the jQuery <i>reference type</i> (demo available <a href="referencetypes-jquerynodeselector.html">here</a>). Reference types are bound.</p>
+<p>
+Note that the formula is NOT recalculated automatically, when the value in the source field changes, because we used the "$" function.
+Here is the same example, where we use the $$ function instead:
+</p>
+Source: <input type="text" id="textinputid2" value="some text"></input><br>
+Target: <input data-formula="$VAL($$('#textinputid2'))" readonly></input><br>
+
+
+
 
 <p>By the way, here is how the $VAL function is added:</p>
 <pre>

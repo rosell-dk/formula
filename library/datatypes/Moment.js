@@ -71,38 +71,6 @@ Formula.addFunction('MOMENT_PARSE_STRICT', function(text, format) {
   return new moment(text, format, true);
 });
 
-/**
- *  Strict parse, which only accepts strict compliance to the format
- *  Ie. MOMENT_STRICT_PARSE('12-24-2014', 'MM-DD-YYYY') is accepted
- *  but MOMENT_STRICT_PARSE('2-24-2014', 'MM-DD-YYYY') is not accepted
- *  and so is MOMENT_STRICT_PARSE('banana 2/24 2014', 'banana M/DD YYYY')
- *
- *  NOTE: ONLY the following tokens are supported: MM, DD, YYYY, D, M 
- */
-Formula.addFunction('MOMENT_CAN_PARSE_STRICT', function(text, format) {  
-//  return new moment(text, format);
-  var f = format;
-  if (f === undefined) {
-    f = Moment.defaultFormat;
-  }
-  f = f.replace('MM', '((0[1-9])|(1[012]))');         // accept 01 - 12
-  f = f.replace('DD', '((0[1-9])|([12]\\d)|3[01])');  // accept 01 - 31
-  f = f.replace('YYYY', '\\d\\d\\d\\d');  // accept 0000 - 9999
-
-  f = f.replace('D', '(([1-9])|([12]\\d)|(3[01]))'); // accept 1-31, not '01'
-  f = f.replace('M', '(([1-9])|([1][012]))'); // accept 1-12, not '01'
-
-//  f = f.replace('D', '\\d{1,2}');
-//alert(f);
-  f = '^' + f + '$';
-
-  var re = new RegExp(f);
-  var result = text.match(re);
-  return (result != null);
-//  return new moment(text, format);
-});
-
-
 
 /** Return year, month, or whatever unit of a date
  *  Units available: 'year', 'month', 'date', 'hour', 'minute', 'second', 'millisecond'

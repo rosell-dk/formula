@@ -20,7 +20,9 @@ var Formula = function(formula, resultChangedCallBack) {
 }
 
 Formula.prototype.triggerChangeCallback = function() {
-  this.resultChangedCallBack();
+  if (typeof this.resultChangedCallBack == 'function') {
+    this.resultChangedCallBack();
+  }
 }
 
 Formula.prototype.calc = function() {

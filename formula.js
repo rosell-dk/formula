@@ -63,10 +63,9 @@ Formula.parseFormula = function(formula) {
   
   for (var i=0; i<Formula.function_names.length; i++) {
     var fname = Formula.function_names[i];
-    var re = new RegExp('(\\b)' + fname + '\\(', 'g');
+    var re = new RegExp('(\\b|\\(|\\s)' + fname.replace('$', '\\$') + '\\(', 'g');
     s = s.replace(re, '$1[FUNCTION:' + fname + '](');
   }
-
   while (true) {
     // Find last function
     var fnPos = -1;

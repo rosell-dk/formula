@@ -15,8 +15,12 @@ var Formula = function(formula, resultChangedCallBack) {
 
   }, 100);
 
-  this.formulaFragment = Formula.parseFormula(formula);
+  this.formulaFragment = Formula.parseFormula(formula, this);
   this.formulaFragment.addChangeHandlers(this);
+}
+
+Formula.prototype.triggerChangeCallback = function() {
+  this.resultChangedCallBack();
 }
 
 Formula.prototype.calc = function() {
@@ -32,7 +36,7 @@ Formula.prototype.referenceChanged = function(reference) {
  *  Return a FormulaFragment object with the parsed formula.
  *  This can later be executed with the .calc() method
  */
-Formula.parseFormula = function(formula) {
+Formula.parseFormula = function(formula, formulaObj) {
   var s = 'PASSTHROUGH(' + formula + ')';
   var formulas = []; 
   /* 
@@ -63,8 +67,11 @@ Formula.parseFormula = function(formula) {
   
   for (var i=0; i<Formula.function_names.length; i++) {
     var fname = Formula.function_names[i];
-    var re = new RegExp('(\\b|\\(|\\s)' + fname.replace('$', '\\$') + '\\(', 'g');
-    s = s.replace(re, '$1[FUNCTION:' + fname + '](');
+    var re = new RegExp('(\\b|\\(|\\s)' + fname.replace(/\$/g, '\\$') + '\\(', 'g');
+    s = s.replace(re, '$1[FUNCTION:' + fname.replace(/\$/g, '$$$$') + '](');
+    if (fname == '$') {
+//      alert(s)
+    }
   }
   while (true) {
     // Find last function
@@ -141,7 +148,7 @@ Formula.parseFormula = function(formula) {
 
     }
     
-    formulas.push(new Formula.Fragment(fname, resolvedParameters, parameters));
+    formulas.push(new Formula.Fragment(fname, resolvedParameters, parameters, formulaObj));
 
     s = s.substr(0, fnPos) + '[FORMULA-' + (formulas.length-1) + ']' + s.substr(fnPos3+1);
 
@@ -175,10 +182,11 @@ Formula.addReferenceType = function(prefix, referenceCreator) {
 /* Class Formula.Frament */
 /* --------------------- */
 
-Formula.Fragment = function(fname, resolvedParameters, parameters) {
+Formula.Fragment = function(fname, resolvedParameters, parameters, formulaObj) {
   this.fname = fname;
   this.resolvedParameters = resolvedParameters;
   this.parameters = parameters;
+  this.formulaObj = formulaObj;
 }
 
 Formula.Fragment.prototype.calc = function() {
@@ -201,7 +209,7 @@ Formula.Fragment.prototype.calc = function() {
 
   // Next, apply the function
   var thisForCustomFunctions = {
-    formula: this
+    formula: this.formulaObj
   }
   var result = Formula.functions[this.fname].apply(thisForCustomFunctions, values);
   return result;

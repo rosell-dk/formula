@@ -43,21 +43,14 @@ Formula.addParser(function(text) {
     var elm = document.getElementById(text);
     if (elm) {
 
-      // Return a Formula.BoundVariable
-      // This can handle the magic of cells being 'live'
-
-      return new Formula.BoundVariable(
-        // function for getting the current value
-        function() {
+      return {
+        getValue: function () {
           return parseFloat(elm.value);
-        }, 
-
-        // function for binding the elements change handler to the formula
-        function(changeCallback) {
+        },
+        setChangeCallback: function(changeCallback) {
           $(elm).bind("change", changeCallback);
         }
-      );
-
+      }
     }
   }
 });
@@ -136,21 +129,14 @@ Formula.addParser(function(text) {
     var elm = document.getElementById(text);
     if (elm) {
 
-      // Return a Formula.BoundVariable
-      // This can handle the magic of cells being 'live'
-
-      return new Formula.BoundVariable(
-        // function for getting the current value
-        function() {
+      return {
+        getValue: function () {
           return parseFloat(elm.value);
-        }, 
-
-        // function for binding the elements change handler to the formula
-        function(changeCallback) {
+        },
+        setChangeCallback: function(changeCallback) {
           $(elm).bind("change", changeCallback);
         }
-      );
-
+      }
     }
   }
 });

@@ -264,18 +264,3 @@ Formula.Fragment.prototype.addChangeHandlers = function(formula) {
   }
 }
 
-/* --------------------------- */
-/* Class Formula.BoundVariable */
-/* --------------------------- */
-
-Formula.BoundVariable = function(getValueCallback, changeCallback) {
-  this.getValueCallback = getValueCallback;
-  this.changeCallback = changeCallback;
-}
-Formula.BoundVariable.prototype.getValue = function() {
-  return this.getValueCallback();
-}
-Formula.BoundVariable.prototype.setChangeCallback = function(cb) {
-  this.changeCallback(cb)
-}
-

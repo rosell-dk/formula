@@ -124,27 +124,12 @@ Formula.parseFormula = function(formula, formulaObj) {
           }
         }
 
-        // Number
-        if (!isNaN(parseFloat(p))) {
-          resolvedParameters.push(parseFloat(p));
-          continue;
-        }
-
-        // String
-        var re = /^([\'][^']*[\'])|([\"][^"]*[\"])/;
-        if (re.exec(p) != null) {
-          resolvedParameters.push(p.substring(1, p.length-1));
-          continue;
-        }
-
-        // Boolean
-        if (p.toLowerCase() == 'false') {
-          resolvedParameters.push(false);
-          continue;
-        }
-        if (p.toLowerCase() == 'true') {
-          resolvedParameters.push(true);
-          continue;
+        for (var j=0; j<Formula.parsers.length; j++) {
+          var parseResult = Formula.parsers[j](p);
+          if (parseResult !== undefined) {
+            resolvedParameters.push(parseResult);
+            continue;
+          }
         }
       }
 
@@ -178,6 +163,51 @@ Formula.addReferenceType = function(prefix, referenceCreator) {
   Formula.referenceCreators[prefix] = referenceCreator;
   Formula.referencePrefixes.push(prefix);
 }
+
+/* Functionality for adding parsers */
+Formula.parsers = [];
+Formula.addParser = function(parserFn, weight) {
+  // No weight specified, then add it last
+  if (weight === undefined) {
+    Formula.parsers.push(parserFn);
+  }
+  else {
+    weight = Math.min(weight, Formula.parsers.length)
+    Formula.parsers.splice(1, 0, parserFn);
+  }
+}
+
+
+// Add String parser
+Formula.addParser(function(text) {
+  // Test if starts with ' or " - for quick exit
+  if ((text[0] != "'") && (text[0] != '"')) {
+    return
+  }
+  // Test if end-quote matches start-quote
+  if (text[0] == text[text.length - 1]) {
+    return text.substring(1, text.length-1);
+  }
+});
+
+// Add Number parser
+Formula.addParser(function(text) {
+  if (!isNaN(parseFloat(text))) {
+    return parseFloat(text);
+  }
+});
+
+// Add Boolean parser
+Formula.addParser(function(text) {
+  if (text.toLowerCase() == 'false') {
+    return false;
+  }
+  if (text.toLowerCase() == 'true') {
+    return true;
+  }
+});
+
+
 
 
 /* --------------------- */

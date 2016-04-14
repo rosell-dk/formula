@@ -115,7 +115,7 @@ Formula.addParser(function(text) {
 
 <h3>Example: Dynamic Cell references</h3>
 <p>The function defined above does not make the grid "alive".
-IF you want your variables to be bound, you can return an object, which has a <i>getValue</i> method for getting the current value, and a <i>setChangeCallback</i> method for attaching the change handler. For convenience, you can use the <span class="monospace">Formula.BoundVariable(getValueFn, setChangeHandlerFn)</span> function for that:
+IF you want your variables to be bound, you can return an object, which has a <i>getValue</i> method for getting the current value, and a <i>setChangeCallback</i> method for attaching the change handler.
 </p>
 
 <pre>

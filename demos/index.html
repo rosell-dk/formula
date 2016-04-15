@@ -6,6 +6,9 @@
   <title>formula demos</title>
   <style>
     body {max-width: 800px; padding:2% 5%}
+    ul {padding-left: 2px; list-style-position: inside;}
+    li {padding-bottom: 5px}
+    h3 {margin-top: 30px;}
   </style>
 </head>
 <body>
@@ -17,26 +20,30 @@
   </ul>-->
 
   <h3>Initializers</h3>
+  <p>An initializer sets up a convenient way to work with formulas</p>
   <ul>
     <li><a href="initializers-data-formula.html">Convieniently create calculated fields</a> - Just by setting a "data-formula" attribute...</li>
   </ul>
 
   <h3>Data types</h3>
+  <p>In the library, we have added some datatypes and related functions. You can try them out in the following demos:</p>
   <ul>
-    <li><a href="datatypes-jquery.html">JQuery.js</a></li>
-    <li><a href="datatypes-simpledate.html">SimpleDate.js</a></li>
+    <li><a href="datatypes-simpledate.html">SimpleDate.js (work with dates)</a></li>
     <li><a href="datatypes-moment.html">Moment.js (for dates as well)</a></li>
-    <li><a href="custom-data-types.html">How to create custom data types</a></li>
+    <li><a href="datatypes-jquery.html">JQuery.js (work with jQuery objects)</a></li>
+<!--    <li><a href="custom-data-types.html">How to create custom data types</a></li>-->
   </ul>
 
-  <h3>Parsers</h3>
+  <h3>Data type parsers</h3>
+  <p>The parser parses numbers, strings and booleans per default. But its easily extended</p>
   <ul>
-    <li><a href="custom-parser.html">How to create custom parsers</a></li>
+    <li><a href="custom-parser.html">How to create custom parsers</a> - Shows how to make a "PI" parser. And a CELL parser</li>
   </ul>
 
-  <h3>Reference types:</h3>
+  <h3>Bound variables (aka references)</h3>
+  <p>A bound variable signals to the formula, when it changes</p>
   <ul>
-    <li><a href="referencetypes-jquerynodeselector.html">jQueryNodeSelector</a> - Select nodes with jQuery selectors</li>
+    <li><a href="referencetypes-jquerynodeselector.html">jQueryNodeSelector</a> - Reference nodes with jQuery selectors</li>
   </ul>
 </body>
 </html>

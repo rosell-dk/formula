@@ -12,7 +12,7 @@ Formula.addFunction('ADD_TWO_NUMBERS', function(a, b) {
 ```
 
 With that function, you can calculate formulas like this:
-ADD_TWO_NUMBERS(10, ADD_TWO_NUMBERS(7, 14.2));
+ADD_TWO_NUMBERS(10, ADD_TWO_NUMBERS(7, 14.2))
 
 
 ## Calculate on any datatype you want

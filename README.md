@@ -71,17 +71,17 @@ You can add your own reference types too. See this <a href="http://rosell.dk/for
 Put this in your head section:
 
 ```HTML
-<script src="../formula.js"></script>
+<script src="formula/formula.js"></script>
 
 <!-- jQuery (or picoquery) is required by data-formula-attr.js initializer -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 
 <!-- For convenience add an initializer, allowing us to specify formulas in the data-formula attribute of input fields -->
 <!-- Note: the initializer requires jQuery (or picoquery)-->
-<script src="../library/initializers/data-formula-attr.js"></script>
+<script src="formula/library/initializers/data-formula-attr.js"></script>
 
 <!-- Enable us to reference fields like this: #apples -->
-<script src="library/referencetypes/InputById.js"></script>
+<script src="formula/library/referencetypes/InputById.js"></script>
 
 <script>
 Formula.addFunction('ADD_TWO_NUMBERS', function(a, b) {
@@ -115,7 +115,8 @@ To run the calculation, you simply call the "calc()" method:
   var result = simpleFormula.calc();
 ```
 
-
+## Demos
+For convenience, I have put the demos online <a href="http://rosell.dk/formula/demos/">here</a>
 
 
 

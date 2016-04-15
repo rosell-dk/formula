@@ -62,7 +62,7 @@ And more importantly: If the user changes any of these values, the formula will 
 You can add your own reference types too. See this <a href="http://rosell.dk/formula/demos/custom-parser.html">demo</a>, where we create a reference type that parses cell references, enabling us to create formulas like this: SUM(A1, B12)
 
 ## Putting it all together
-Put this in the <head> section:
+Put this in your head section:
 
 ```HTML
 <script src="../formula.js"></script>
@@ -86,9 +86,9 @@ Formula.addFunction('ADD_TWO_NUMBERS', function(a, b) {
 
 And you will be able to do this:
 ```HTML
-Number of apples in basket: <input id="apples"></input><br>
-Number of oranges in basket: <input id="oranges"></input><br>
-Total number of fruits in basket: <input data-formula="ADD_TWO_NUMBERS(#apples,#oranges)" readonly></input>
+Apples in basket: <input id="apples"></input><br>
+Oranges in basket: <input id="oranges"></input><br>
+Fruits in basket: <input data-formula="ADD_TWO_NUMBERS(#apples,#oranges)" readonly></input>
 ```
 
 

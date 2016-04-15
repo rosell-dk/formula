@@ -1,7 +1,8 @@
 # formula
-Generic engine for parsing and running excel-like formulas
+Generic engine for parsing and running excel-like formulas plus a library
 
-## No functions predefined
+
+## Adding functions
 formula is born without any functions. It is however very easy to add a function:
 
 ```javascript
@@ -10,36 +11,12 @@ Formula.addFunction('ADD_TWO_NUMBERS', function(a, b) {
 });
 ```
 
-## Creating a formula
-A formula is created with the Formula constructor, which takes the formula as an argument, and optionally a callback, which we will be called whenever the result changes, due to a reference that has changed (we will get to references in a minute)
-
-```javascript
-  var simpleFormula = new Formula('ADD_TWO_NUMBERS(0.1,9)', changeCallback);
-```
-
-To run the calculation, you simply call the "calc()" method:
-
-```javascript
-  var result = simpleFormula.calc();
-```
-
-## No reference types are predefined either
-Formulas are much more fun, when they can reference stuff. For example, you might want to reference a number, which the user enters in an html input field. Or something entered in a jQuery widget. Or a data model representing data in a database. Or... 
-
-To enable references, you need to create and add a reference type first. - Or just go to the library/referencetypes and pick one...
-
-A formula containing references may look like this: SUM(#apples, #oranges). Here '#apples' and '#oranges' are references - <i>provided that a reference type with the prefix '#' has been added</i>. If a refence with prefix set to "UNGAMUNGA:" has been added, then 'UNGAMUNGA:banana' will be a valid reference. 
-
-To start using existing reference types, just include the reference type in HTML, ie:
-```HTML
-  <script src="library/referencetypes/InputById.js"></script>
-```
-In the demo section you can find demonstration of various refence types
+With that function, you can calculate formulas like this:
+ADD_TWO_NUMBERS(10, ADD_TWO_NUMBERS(7, 14.2));
 
 
-
-## A note on types
-As mentioned, references can return any type. The same applies to functions - they can accept any type. The engine just moves these types around ignorantly.
+## Calculate on any datatype you want
+As the engine just moves the variables around ignorantly, you can use it with whatever data type you like.
 
 Thus you can for example enable the engine to work with complex numbers this way:
 
@@ -64,9 +41,77 @@ var formula1 = new Formula('ADD_TWO_COMPLEX_NUMBERS(COMPLEXNUMBER(10,10),COMPLEX
 var result = formula.calc();    // result is a ComplexNumber object
 ```
 
-You might also consider adding functions for fomatting and parsing your data type. Though, in many cases, you may prefer not to do the formatting with the formula, but after the formula has run; - the unformatted value is often "more worth".
+We have already created some usefull datatypes and some related functions. Check out the "datatypes" section in the <a href="http://rosell.dk/formula/demos/">demos</a>
 
-As data types and their related functions are created, they will be added in the "library/datatypes" folder of this repository.
+
+## Initializers
+The library contains initializers for conveniently working with formulas.
+
+For example, there is an initializer which enables you to create calculated fields which are automatically recalculated, when the formula changes, just by setting an attribute on an input field. 
+
+
+## Bound variables (aka references)
+Bound variables signals to the formula, when they change.
+Say you have included the "InputById" reference type, you will be able to write a formula like this:
+
+ADD_TWO_NUMBERS(#apples, #oranges)
+
+This sums the values of the input with id set to "apples" and the input with id set to "oranges"
+And more importantly: If the user changes any of these values, the formula will get notified (and itself call its changeCallback)
+
+You can add your own reference types too. See this <a href="http://rosell.dk/formula/demos/custom-parser.html">demo</a>, where we create a reference type that parses cell references, enabling us to create formulas like this: SUM(A1, B12)
+
+## Putting it all together
+Put this in the <head> section:
+
+```HTML
+<script src="../formula.js"></script>
+
+<!-- jQuery (or picoquery) is required by data-formula-attr.js initializer -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+<!-- For convenience add an initializer, allowing us to specify formulas in the data-formula attribute of input fields -->
+<!-- Note: the initializer requires jQuery (or picoquery)-->
+<script src="../library/initializers/data-formula-attr.js"></script>
+
+<!-- Enable us to reference fields like this: #apples -->
+<script src="library/referencetypes/InputById.js"></script>
+
+<script>
+Formula.addFunction('ADD_TWO_NUMBERS', function(a, b) {
+  return a+b;
+});
+</script>
+```
+
+And you will be able to do this:
+```HTML
+Number of apples in basket: <input id="apples"></input><br>
+Number of oranges in basket: <input id="oranges"></input><br>
+Total number of fruits in basket: <input data-formula="ADD_TWO_NUMBERS(#apples,#oranges)" readonly></input>
+```
+
+
+## Without initializers
+
+Without initializers, you create formulas like this:
+
+```javascript
+  function changeCallback() {
+    // here we can react to changes, if the formula contains bound variables (aka references)
+  }
+  var simpleFormula = new Formula('ADD_TWO_NUMBERS(0.1,9)', changeCallback);
+```
+
+To run the calculation, you simply call the "calc()" method:
+
+```javascript
+  var result = simpleFormula.calc();
+```
+
+
+
+
 
 
 

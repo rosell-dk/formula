@@ -49,6 +49,12 @@ The library contains initializers for conveniently working with formulas.
 
 For example, there is an initializer which enables you to create calculated fields which are automatically recalculated, when the formula changes, just by setting an attribute on an input field. 
 
+Like this:
+
+````HTML
+<input data-formula="ADD_TWO_NUMBERS(7,8)" readonly></input>
+````
+
 
 ## Bound variables (aka references)
 Bound variables signals to the formula, when they change.

@@ -35,7 +35,7 @@ Formula.prototype.calc = function() {
 }
 
 Formula.prototype.referenceChanged = function(reference) {
-  console.log('Formula.referenceChanged() called. New value:' + reference);
+//  console.log('Formula.referenceChanged() called. New value:' + reference);
   this.resultChangedCallBack();
 }
 
@@ -44,7 +44,7 @@ Formula.prototype.parseError = function() {
 }
 
 Formula.parseFormula = function(formula, formulaObj) {
-  console.log('parsing formula:' + formula)
+//  console.log('parsing formula:' + formula)
 
   var pos;
   var functionLevel = 0;
@@ -78,7 +78,7 @@ Formula.parseFormula = function(formula, formulaObj) {
 
       var fname = reSniffFunction.exec(meal)[1];
       if (!(Formula.functions[fname])) {
-        console.log('Function: ' + fname + ' has not been defined. Parse error!');
+//        console.log('Function: ' + fname + ' has not been defined. Parse error!');
         return;
       }
       output.push(-1);   // -1: FUNCTION_START
@@ -90,8 +90,8 @@ Formula.parseFormula = function(formula, formulaObj) {
     // parse number
     if (reSniffNumber.test(meal)) {
       var result = reParseNumber.exec(meal);
-      console.log('parsing number' + meal);
-      console.log(result);
+//      console.log('parsing number' + meal);
+//      console.log(result);
       if (result == null) {
         return;
       }
@@ -118,7 +118,7 @@ Formula.parseFormula = function(formula, formulaObj) {
       var str = result[1].replace(/""/g, '"');
       output.push(-4);   // -4: Simple value
       output.push(str);
-      console.log('string value:' + str);
+//      console.log('string value:' + str);
 
       meal = meal.substr(result[0].length);
       continue;
@@ -138,10 +138,10 @@ Formula.parseFormula = function(formula, formulaObj) {
         return;
       }
       var text = result[1];
-console.log('leftovers:' + text);
+//console.log('leftovers:' + text);
 
       meal = meal.substr(text.length);
-console.log('meal left:' + meal);
+//console.log('meal left:' + meal);
 
       for (var j=0; j<Formula.parsers.length; j++) {
         var parseResult = Formula.parsers[j](text);
@@ -174,8 +174,8 @@ console.log('meal left:' + meal);
     }
   }
 
-  console.log('output:')
-  console.log(output);
+//  console.log('output:')
+//  console.log(output);
 
   // Next, process output to create Formula.Fragments
   var i=0;
@@ -202,7 +202,7 @@ console.log('meal left:' + meal);
       return output[i-1];
     }
     else {
-      console.log('Unexpected token. Expected FUNCTION_START or SIMPLE_VALUE. Got: ' + output[i] + '. exiting');
+//      console.log('Unexpected token. Expected FUNCTION_START or SIMPLE_VALUE. Got: ' + output[i] + '. exiting');
       return;
     }
   }
@@ -211,12 +211,12 @@ console.log('meal left:' + meal);
   // When returning, i points to element after
   function processFunction() {
     if (output[i] != -1) {
-      console.log('Unexpected token. Expected FUNCTION_START. exiting');
+//      console.log('Unexpected token. Expected FUNCTION_START. exiting');
       return;
     }
     i++;
     var fname = output[i];
-    console.log('fname:' + fname);
+//    console.log('fname:' + fname);
     i++;
     var parameters = [];
 
@@ -230,14 +230,14 @@ console.log('meal left:' + meal);
       }
     }
     i++;
-    console.log('Parsed function: ' + fname + '. Parameters:');
-    console.log(parameters);
+//    console.log('Parsed function: ' + fname + '. Parameters:');
+//    console.log(parameters);
     return new Formula.Fragment(fname, parameters, formulaObj)
   }
 
   var frag = processFunction();
-  console.log('frag:');
-  console.log(frag);
+//  console.log('frag:');
+//  console.log(frag);
   return frag;
 
 // new Formula.Fragment(fname, parameters, parameters, formulaObj)

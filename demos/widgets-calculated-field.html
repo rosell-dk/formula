@@ -4,13 +4,15 @@
   <meta charset="utf-8">
   <title>jQuery UI Widget - Default functionality</title>
 
+  <!-- All widgets require jquery AND jquery UI -->
   <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
   <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
   <script src="../formula.js"></script>
   <script src="../library/referencetypes/Element.js"></script>
 
-  <script src="../library/widgets/calculated-field.js"></script>
+  <!-- The widget that we are demonstrating here -->
+  <script src="../library/widgets/calculatedfield.js"></script>
 
   <script>
 
@@ -51,8 +53,6 @@
 
 
   $(function() { 
-    // initialize with default options
- 
 
     $( "#initex1" ).calculatedfield( {
       formula: 'SUM(1,2)'

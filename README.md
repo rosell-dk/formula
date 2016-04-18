@@ -119,6 +119,19 @@ To run the calculation, you simply call the "calc()" method:
 For convenience, I have put the demos online <a href="http://rosell.dk/formula/demos/">here</a>
 
 
+## Parser limitations
+The parser can parse:
+- Function added with the "addFunction" method
+- Nested functions
+- Numbers
+- Strings. Same syntax as in Excel (use doublequotes, not single quotes. And to quote a doublequote, add a doublequote before it. Ie: "My name is ""Sam"""
+- Booleans
+- Stuff added with the "addParser" method
+
+The parser can not parse:
+- Operators. You cannot do this: "9+17". You must instead rewrite it to use functions: SUM(9,17)
+
+
 
 
 

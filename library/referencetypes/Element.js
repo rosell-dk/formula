@@ -57,9 +57,12 @@ Formula.addParser(function(text) {
         }
       },
       setChangeCallback: function(changeCallback) {
-        // This is where jQuery is needed.
         // TODO: do not depend on jQuery
-        $(elm).bind("change", changeCallback);
+        $(elm).on("change", changeCallback);
+      },
+      removeChangeCallback: function(changeCallback) {
+        // TODO: do not depend on jQuery
+        $(elm).off("change", changeCallback);
       }
     }
   }

@@ -6,13 +6,11 @@ $(function() {
   $.widget( "formula.calculatedfield", {
     // default options
     options: {
-//      format: null,
       formula: null,
 
       // callbacks
       change: null,
       formatter: null,
-//      random: null
     },
 
     // the constructor
@@ -22,7 +20,6 @@ $(function() {
       this.element.attr( "readonly", "readonly" );
 
       if (this.options.formula == null) {
-//        this._setOption('formula', this.element.attr('data-formula'));
         if (this.element.attr('data-formula') !== undefined) {
           this.options.formula = this.element.attr('data-formula');
         }
@@ -70,7 +67,6 @@ $(function() {
     // called when created, and later when changing options
     _refresh: function() {
 
-//      alert('formula:' + this.options.formula);
       if (this.options.formatter) {
         this.element.val(this.options.formatter(this.value));
       }
@@ -83,21 +79,6 @@ $(function() {
 
     },
 
-    // a public method to change the color to a random value
-    // can be called directly via .colorize( "random" )
-/*
-    random: function( event ) {
-      var colors = {
-        red: Math.floor( Math.random() * 256 ),
-        green: Math.floor( Math.random() * 256 ),
-        blue: Math.floor( Math.random() * 256 )
-      };
-
-      // trigger an event, check if it's canceled
-      if ( this._trigger( "random", event, colors ) !== false ) {
-        this.option( colors );
-      }
-    },*/
 
     // events bound via _on are removed automatically
     // revert other modifications here
@@ -115,11 +96,6 @@ $(function() {
 
     // _setOption is called for each individual option that is changing
     _setOption: function( key, value ) {
-      // prevent invalid color values
-/*      if ( /red|green|blue/.test(key) && (value < 0 || value > 255) ) {
-        return;
-      }*/
-//      alert('set option:' + key + ':' + value);
       if (key == 'formula') {
         this.options.formula = value;
         this._createFormulaObject();

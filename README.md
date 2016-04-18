@@ -129,7 +129,7 @@ The parser can parse:
 - Stuff added with the "addParser" method
 
 The parser can not parse:
-- Operators. You cannot do this: "9+17". You must instead rewrite it to use functions: SUM(9,17)
+- Operators. You cannot do this: "9+17". You must rewrite such formulas to use functions instead, ie: SUM(9,17)
 
 
 

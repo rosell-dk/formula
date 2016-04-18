@@ -55,9 +55,10 @@ Formula.addParser(function(text) {
   }
 });
 
-
-
-
+//Formula.parseFormula2('SUM(14,DYT(18,19))');
+//var f = Formula.parseFormula('CONCAT_TWO_STRINGS("hej ","""the guy""")');
+//alert(f.calc());
+//alert('""hej""'.replace(/""/g, '"'));
 </script>
 
 <style>
@@ -70,6 +71,8 @@ Formula.addParser(function(text) {
   .subheading {font-size: 0.8em; font-weight: normal}
   .monospace {font-family:monospace;}
   table input {width: 50px}
+  input[readonly] {background-color: #eee}
+
 </style>
 </head>
 <body>
@@ -164,8 +167,12 @@ Formula.addParser(function(text) {
 <p>With this little cell-reference-parser we can create formulas like this:</p>
 ADD_TWO_NUMBERS(A1,A2): <input data-formula="ADD_TWO_NUMBERS(A1,A2)" readonly></input><br>
 
-
-
-
+<h3>Restrictions</h3>
+<ul>
+  <li>Your expression may not look like a number. That is, it may start with +,- or a digit</li>
+  <li>Your expression may not look like a string. That is, it may start with "</li>
+  <li>Your expression may not look like a boolean. That is, it may not equal TRUE or FALSE</li>
+  <li>Your expression may not contain "(", ")" or ","</li>
+</ul>
 </body>
 </html>

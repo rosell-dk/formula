@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>formula demo</title>
 <script src="../formula.js"></script>
+
+<!-- InputById requires jQuery (or picoquery) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script src="../library/referencetypes/InputById.js"></script>
 <script>
 /*
 Formula.addFunction('COMPLEXNUMBER', function(a, b) {
@@ -24,19 +27,6 @@ Formula.addFunction('SUM', function() {
   return result;
 });
 */
-
-// Add reference type
-// ------------------
-function ElmReference(ref) {
-  this.elm = document.getElementById(ref);
-}
-ElmReference.prototype.getValue = function() {
-  return $(this.elm).val();
-}
-ElmReference.prototype.setChangeCallback = function(changeCallback) {
-  $(this.elm).bind("change", changeCallback);
-}
-Formula.addReferenceType('#', function (ref){return new ElmReference(ref)});
 
 
 // Add some functions
@@ -87,6 +77,10 @@ jQuery(function() {
 //  alert(formula1.calc());
   
 
+
+  var parseErrorTest = new Formula('IF(');  
+  alert('parse error? ' + parseErrorTest.parseError());
+
 //  var formula2 = new Formula('SUM(1,ELMBYID(test))');
 //  alert(formula2.calc());
 });
@@ -95,6 +89,7 @@ jQuery(function() {
 <style>
   body {max-width: 800px; padding:2% 5%}
   label {margin-right: 10px}
+  input[readonly] {background-color: #eee}
 </style>
 </head>
 <body>

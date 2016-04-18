@@ -49,6 +49,9 @@ Formula.addParser(function(text) {
         },
         setChangeCallback: function(changeCallback) {
           $(elm).bind("change", changeCallback);
+        },
+        removeChangeCallback: function(changeCallback) {
+          $(elm).off("change", changeCallback);
         }
       }
     }
@@ -118,7 +121,7 @@ Formula.addParser(function(text) {
 
 <h3>Example: Dynamic Cell references</h3>
 <p>The function defined above does not make the grid "alive".
-IF you want your variables to be bound, you can return an object, which has a <i>getValue</i> method for getting the current value, and a <i>setChangeCallback</i> method for attaching the change handler.
+IF you want your variables to be bound, you can return an object, which has a <i>getValue</i> method for getting the current value, and a <i>setChangeCallback</i> method for attaching the change handler. Preferably also a <i>removeChangeCallback</i> method.
 </p>
 
 <pre>
@@ -138,6 +141,10 @@ Formula.addParser(function(text) {
         },
         setChangeCallback: function(changeCallback) {
           $(elm).bind("change", changeCallback);
+        },
+        removeChangeCallback: function(changeCallback) {
+          // TODO: do not depend on jQuery
+          $(elm).off("change", changeCallback);
         }
       }
     }

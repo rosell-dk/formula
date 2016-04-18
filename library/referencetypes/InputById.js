@@ -16,9 +16,12 @@ Formula.addParser(function(text) {
         return elm.value;
       },
       setChangeCallback: function(changeCallback) {
-        // This is where jQuery is needed.
         // TODO: do not depend on jQuery
         $(elm).bind("change", changeCallback);
+      },
+      removeChangeCallback: function(changeCallback) {
+        // TODO: do not depend on jQuery
+        $(elm).off("change", changeCallback);
       }
     }
   }

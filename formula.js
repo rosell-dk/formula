@@ -350,3 +350,21 @@ Formula.Fragment.prototype.addChangeHandlers = function(formula) {
   }
 }
 
+/* Remove change handlers to all references in this formula */
+Formula.Fragment.prototype.removeChangeHandlers = function(formula) {
+  for (var i=0; i<this.parameters.length; i++) {
+    var p = this.parameters[i];
+    if (p instanceof Formula.Fragment) {
+      p.addChangeHandlers(formula);
+    }
+
+    // Handle reference
+    else if (typeof p['removeChangeCallback'] === 'function') {
+      p.removeChangeCallback(function() {
+        formula.referenceChanged(this);
+      });
+    }
+  }
+}
+
+

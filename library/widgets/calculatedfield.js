@@ -24,7 +24,8 @@ $(function() {
           this.options.formula = this.element.attr('data-formula');
         }
         else {
-          this.options.formula = '"empty"';
+          // Represent empty formula as an empty string
+          this.options.formula = '""';
         }
       }
 

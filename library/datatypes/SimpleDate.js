@@ -1,7 +1,3 @@
-/**
- * Under construction!
- */
-
 function SimpleDate(year, month, day) {
   this.year = year;
   this.month = month;   // month is NOT zero-based
@@ -50,7 +46,6 @@ Formula.addFunction('SIMPLEDATE', function(year, month, day) {
  * @param format [String] (optional) - The format. If no format is supplied, SimpleDate.defaultFormat will be used
  *
  *  The following tokens are supported: YYYY, MM, DD, D, M
- *  (but note that D and M are not supported in the parser)
  *
  * Examples: 
  *   SIMPLEDATE_FORMAT(SIMPLEDATE_NOW(), 'DD-MM-YYYY')

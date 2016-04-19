@@ -6,9 +6,10 @@
  *  The reference is parsed into two parts.
  *  First part dictates how to find the input element.
  *  Examples: 
- *    '#id:bananas' - find the element by id (in this case: id=bananas)
- *    '#name:bananas' - find the element by name
- *    '#bananas' - also find the element by id
+ *    '#bananas' - also find the element by id (in this case: id=bananas)
+ *    '@bananas' - find the element by name (in this case: name=bananas)
+ *    '#id:bananas' - another syntax for finding the element by id (deprecated)
+ *    '#name:bananas' - another syntax for finding the element by name  (deprecated)
  *
  *  The second part tells what to return
  *    '#bananas.value' - Return the value of the input
@@ -18,24 +19,28 @@
  *
  */
 Formula.addParser(function(text) {
-  if (text[0] != '#') {
+  if ((text[0] != '#') && (text[0] != '@')){
     return
   }
-  var parts = text.substr(1).split('.');
+  var parts = text.split('.');
 
   var sel = parts[0];
   var valuePart = parts[1];
 
   var elm;
-  if (sel.substr(0, 3) == 'id:') {
-    elm = document.getElementById(sel.substr(3));
+  if (sel.substr(0, 4) == '#id:') {
+    elm = document.getElementById(sel.substr(4));
   }
-  else if (sel.substr(0, 5) == 'name:') {
-    elm = $("[name='" + sel.substr(5) + "']").get(0);
+  else if (sel.substr(0, 6) == '#name:') {
+    elm = $("[name='" + sel.substr(6) + "']").get(0);
   }
-  else {
-    elm = document.getElementById(sel);
+  else if (sel[0] == '#') {
+    elm = document.getElementById(sel.substr(1));
   }
+  else if (sel[0] == '@') {
+    elm = $("[name='" + sel.substr(1) + "']").get(0);
+  }
+
   if (elm) {
     // Return a "Bound variable". (an object with a getValue() function, and a setChangeCallback() function
     return {

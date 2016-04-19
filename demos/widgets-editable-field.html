@@ -17,13 +17,19 @@
   <script>
 
 
-  Formula.addFunction('SUM', function() {
-    var result=0;
-    for (var i=0; i<arguments.length; i++) {
-      result += parseFloat(arguments[i]);
-    }
-    return result;
-  });
+  Formula.addFunctions([
+    ['SUM', function() {
+      var result=0;
+      for (var i=0; i<arguments.length; i++) {
+        result += parseFloat(arguments[i]);
+      }
+      return result;
+    }],
+    ['MANUALLY_EDITED', function(elm) {
+      return $(elm).hasClass('manually-edited');
+    }]
+  ]);
+  
 
   function dollarFormatter(text) {
     return '$' + text;
@@ -67,6 +73,12 @@
 //      formula: 'SUM(#ex1,FIELD_VALUE(#ex2.element))',
       formula: 'SUM(FIELD_VALUE(#ex3.element),#ex4)',
       formatter: dollarFormatter,
+      editable: false
+    });
+
+    $( "#ex6" ).editablefield( {
+//      formula: 'SUM(#ex1,FIELD_VALUE(#ex2.element))',
+      formula: 'MANUALLY_EDITED(#ex3.element)',
       editable: false
     });
 
@@ -120,6 +132,15 @@ Sum (editable): <input id="ex3"></input><br>
 Extra: <input id="ex4" value="1"></input><br>
 
 Total (not editable): <input id="ex5"></input><br>
+
+<p>The widget adds the class "manually-edited" to a field, when its manually edited.</p>
+<p>This makes it easy to write a function that detects whether a field is manually edited</p>
+<pre>
+Formula.addFunction('MANUALLY_EDITED', function(elm) {
+  return $(elm).hasClass('manually-edited');
+});
+</pre>
+Is sum manually edited? <input id="ex6" ></input><br>
 
 </body>
 </html>

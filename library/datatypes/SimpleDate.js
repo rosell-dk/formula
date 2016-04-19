@@ -11,6 +11,94 @@ SimpleDate.prototype.toString = function() {
   return this.format();
 }
 
+SimpleDate.parse = function(text, format) {
+  if (format === undefined) {
+    format = SimpleDate.defaultFormat;
+  }
+  var f = format;
+
+  f = f.replace('MM', '((?:0[1-9])|(?:1[012]))');         // accept 01 - 12
+  f = f.replace('DD', '((?:0[1-9])|(?:[12]\\d)|3[01])');  // accept 01 - 31
+  f = f.replace('YYYY', '(\\d\\d\\d\\d)');  // accept 0000 - 9999
+
+  f = f.replace('D', '((?:[1-9])|(?:[12]\\d)|(?:3[01]))'); // accept 1-31, not '01'
+  f = f.replace('M', '((?:[1-9])|(?:[1][012]))'); // accept 1-12, not '01'
+
+  f = '^' + f + '$';
+
+  var re = new RegExp(f);
+  var result = text.match(re);
+  if (result == null) {
+//    alert('could not parse "' + text + '" according to format: "' + format + '"');
+    var sd = new SimpleDate();
+    sd.valid = false;
+    return sd;
+  }
+
+  // We now have the parts in [1], [2], etc.
+  // The order of these parts are the order in which they occured.
+  // So, now, we need to sort that out
+
+  var tokensToSearchFor = ['YYYY', 'M', 'D'];
+  var positions = [];
+  for (var i=0; i<tokensToSearchFor.length; i++) {
+    var token = tokensToSearchFor[i];
+    var pos = format.indexOf(tokensToSearchFor[i]);
+    if (pos != -1) {
+      positions.push({
+        token: token,
+        pos: pos
+      });
+    }
+  }
+  positions.sort(function (a, b) {
+    if (a.pos > b.pos) {
+      return 1;
+    }
+    if (a.pos < b.pos) {
+      return -1;
+    }
+    return 0;
+  });
+
+  // Now connect the parts
+
+  var now = new Date();
+
+  // default values
+  var year = now.getFullYear();
+  var month = now.getMonth() + 1;
+  var day = now.getDate();
+
+  for (var i=1; i<result.length; i++) {
+    var token = positions[i-1].token;
+    switch (token) {
+      case 'YYYY':
+        year = result[i];
+        break;
+      case 'M':
+        month = result[i];
+        break;
+      case 'D':
+        day = result[i];
+        break;
+    }
+  }
+
+  // Lets check if its a valid date
+  // we do this by setting a Date object, and reading it to see if its what we set it to
+
+  var d = new Date(year, month - 1, day);
+  if ((d.getFullYear() != year) || (d.getMonth() != (month-1)) || (d.getDate() != day) ) {
+    var sd = new SimpleDate();
+    sd.valid = false;
+    return sd;
+  }
+
+  return new SimpleDate(year, month, day);
+
+}
+
 SimpleDate.prototype.toDate = function() {
   return new Date(this.year, this.month-1, this.day);
 }
@@ -61,96 +149,7 @@ Formula.addFunction('SIMPLEDATE_FORMAT', function(sd, format) {
  *  NOTE: ONLY the following tokens are supported: MM, DD, YYYY, D, M
  */
 Formula.addFunction('SIMPLEDATE_PARSE', function(text, format) {
-  var f = format;
-  if (f === undefined) {
-    f = SimpleDate.defaultFormat;
-  }
-  f = f.replace('MM', '((?:0[1-9])|(?:1[012]))');         // accept 01 - 12
-  f = f.replace('DD', '((?:0[1-9])|(?:[12]\\d)|3[01])');  // accept 01 - 31
-  f = f.replace('YYYY', '(\\d\\d\\d\\d)');  // accept 0000 - 9999
-
-  f = f.replace('D', '((?:[1-9])|(?:[12]\\d)|(?:3[01]))'); // accept 1-31, not '01'
-  f = f.replace('M', '((?:[1-9])|(?:[1][012]))'); // accept 1-12, not '01'
-
-//  f = f.replace('D', '\\d{1,2}');
-//alert(f);
-  f = '^' + f + '$';
-
-  var re = new RegExp(f);
-  var result = text.match(re);
-  if (result == null) {
-//    alert('could not parse "' + text + '" according to format: "' + format + '"');
-    var sd = new SimpleDate();
-    sd.valid = false;
-    return sd;
-  }
-  // We now have the parts in [1], [2], etc.
-  // The order of these parts are the order in which they occured.
-  // So, now, we need to sort that out
-
-  var tokensToSearchFor = ['YYYY', 'M', 'D'];
-  var positions = [];
-  for (var i=0; i<tokensToSearchFor.length; i++) {
-    var token = tokensToSearchFor[i];
-    var pos = format.indexOf(tokensToSearchFor[i]);
-    if (pos != -1) {
-      positions.push({
-        token: token,
-        pos: pos
-      });
-    }
-  }
-  positions.sort(function (a, b) {
-    if (a.pos > b.pos) {
-      return 1;
-    }
-    if (a.pos < b.pos) {
-      return -1;
-    }
-    return 0;
-  });
-
-// alert(JSON.stringify(positions));  
-// alert(JSON.stringify(result));  
-
-  // Now connect the parts
-
-  var now = new Date();
-
-  // default values
-  var year = now.getFullYear();
-  var month = now.getMonth() + 1;
-  var day = now.getDate();
-
-  for (var i=1; i<result.length; i++) {
-    var token = positions[i-1].token;
-    switch (token) {
-      case 'YYYY':
-        year = result[i];
-        break;
-      case 'M':
-        month = result[i];
-        break;
-      case 'D':
-        day = result[i];
-        break;
-    }
-  }
-
-  // Lets check if its a valid date
-  // we do this by setting a Date object, and reading it to see if its what we set it to
-
-  var d = new Date(year, month - 1, day);
-  if ((d.getFullYear() != year) || (d.getMonth() != (month-1)) || (d.getDate() != day) ) {
-    var sd = new SimpleDate();
-    sd.valid = false;
-    return sd;
-  }
-
-  return new SimpleDate(year, month, day);
-
-//  return new moment(text, format);
-
+  return SimpleDate.parse(text, format);
 });
 
 Formula.addFunction('SIMPLEDATE_IS_VALID', function(sd) {

@@ -1,4 +1,7 @@
-var Formula = function(formula, resultChangedCallBack) {
+var Formula = function(formula, resultChangedCallBack, backReference) {
+
+  // Enable the one who creates the Formula to get itself
+  this.backReference = backReference;
 
   this.resultChangedCallBack = resultChangedCallBack;
 
@@ -144,7 +147,7 @@ Formula.parseFormula = function(formula, formulaObj) {
 //console.log('meal left:' + meal);
 
       for (var j=0; j<Formula.parsers.length; j++) {
-        var parseResult = Formula.parsers[j](text);
+        var parseResult = Formula.parsers[j](text, formulaObj);
         if (parseResult !== undefined) {
           // A match!
           output.push(-4);   // -4: Simple value
@@ -257,18 +260,17 @@ Formula.addFunction = function(fname, fn) {
   Formula.functions[fname] = fn;
 }
 
+Formula.addFunctions = function(arr) {
+  for (var i=0; i<arr.length; i++) {
+    Formula.function_names.push(arr[i][0]);
+    Formula.functions[arr[i][0]] = arr[i][1];
+  }
+}
+
 Formula.addFunction('PASSTHROUGH', function(val) {
   return val;
 });
 
-
-/* Functionality for adding reference types */
-Formula.referenceCreators = {}
-Formula.referencePrefixes = [];
-Formula.addReferenceType = function(prefix, referenceCreator) {
-  Formula.referenceCreators[prefix] = referenceCreator;
-  Formula.referencePrefixes.push(prefix);
-}
 
 /* Functionality for adding parsers */
 Formula.parsers = [];

@@ -137,7 +137,16 @@ SimpleTime.prototype.toFactoryTime = function() {
   return (this.toSeconds() / 3600);
 }
 
+SimpleTime.isValidSimpleTime = function(st) {
+  return ((st != null) && (st instanceof SimpleTime) && (st.valid));
+}
 SimpleTime.subtract = function(st1, st2) {
+  if ((!SimpleTime.isValidSimpleTime(st1)) || (!SimpleTime.isValidSimpleTime(st2))) {
+    console.log('SimpleTime.subtract failed - wrong arguments');
+    console.log(st1);
+    console.log(st2);
+    return SimpleTime.invalidTimeObj;
+  }
   var st1secs = st1.toSeconds();
   var st2secs = st2.toSeconds();
   var secs;

@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Timesheet demo</title>
+
+  <!-- All widgets require jquery AND jquery UI -->
+  <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+  <script src="../formula.js"></script>
+  <script src="../library/referencetypes/Element.js"></script>
+
+  <script src="../library/datatypes/SimpleTime.js"></script>
+  <script src="../library/datatypes/boolean.js"></script>
+  <script src="../library/datatypes/number.js"></script>
+
+  <script src="../library/widgets/calculatedfield.js"></script>
+  <script src="../library/widgets/formattedfield.js"></script>
+
+  <script>
+
+  function timeOrEmptyFormatter(obj) {
+    if ((obj == null) || ((typeof obj == 'string') && (obj == ''))){
+      return '';
+    }
+    return obj.format();
+  }
+
+  function timeOrEmptyDeformatter(text) {
+    if ((text == null) || (text == '')){
+      return '';
+    }
+    return SimpleTime.parse(text);
+  }
+
+  function twoDigitsFormatterZeroAsEmpty(num) {
+    if (typeof num == 'string') {
+      // assume it is already formatted
+      return num;
+    }
+    if (typeof num == 'number') {
+      var text = num.toFixed(2);
+//      text = text.replace('.', ',');
+      return text;
+    }
+  }
+
+  function fieldValue($elm) {
+    if ($elm.hasClass('formatted-field')) {
+      return $elm.formattedfield('getValue');
+    }
+    return $elm.val();
+  }
+
+  Formula.addFunctions(
+    ['$SUM', function($jq) {
+      var result=0;
+      $jq.each(function() {
+//        result += parseFloat($(this).val());
+        result += numVal(fieldValue($(this)));
+      });
+      return result;
+    }],
+    ['USEDTIME', function(startTime, endTime) {
+      //IF(AND(SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:end-time)),SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:start-time))),SIMPLETIME_SUBTRACT(SIMPLETIME_PARSE(row:end-time),SIMPLETIME_PARSE(row:start-time)), "")
+//      if ((startTime == null) || (endTime == null)) {
+      if ((!SimpleTime.isValidSimpleTime(startTime)) || (!SimpleTime.isValidSimpleTime(endTime))) {
+        return '';
+      }
+      return SimpleTime.subtract(endTime, startTime).toFactoryTime();
+    }]
+  );
+
+  // Add "row:" reference-parser, which can reference a cell value in current row (tr)
+  Formula.addParser(function(text, formulaObj) {
+    if (text.substr(0,4) != 'row:') return
+    var columnClass = text.substr(4);
+
+    var $calculatedField = formulaObj.backReference;
+    var $elm = $calculatedField.closest('tr').find('.' + columnClass);
+
+    if ($elm.length == 0) {
+      return '#REF error';
+    }
+    return {
+      getValue: function () {
+        return fieldValue($elm);
+      },
+      setChangeCallback: function(changeCallback) {
+        $elm.on("change", changeCallback);
+      },
+      removeChangeCallback: function(changeCallback) {
+        $elm.off("change", changeCallback);
+      }
+    }
+  });
+
+  // Add "." reference-parser, which can reference SEVERAL cells
+  // It returns an array with the cell values
+  Formula.addParser(function(text, formulaObj) {
+    if (text[0] != '.') return
+    var className = text.substr(1);
+
+    var $elements = $(text);
+
+    return {
+      getValue: function () {
+        return $elements;
+      },
+      setChangeCallback: function(changeCallback) {
+        $elements.on("change", changeCallback);
+      },
+      removeChangeCallback: function(changeCallback) {
+        $elements.off("change", changeCallback);
+      }
+    }
+  });
+
+
+  $(function() { 
+
+    $( ".start-time" ).add( ".end-time" ).formattedfield( {
+      formatter: timeOrEmptyFormatter,
+      deformatter: timeOrEmptyDeformatter,
+    });
+
+    $( ".used-time" ).calculatedfield( {
+//      formula: 'IF(AND(SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:end-time)),SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:start-time))),SIMPLETIME_SUBTRACT(SIMPLETIME_PARSE(row:end-time),SIMPLETIME_PARSE(row:start-time)), "")',
+      formula: 'USEDTIME(row:start-time,row:end-time)',
+      formatter: twoDigitsFormatterZeroAsEmpty,
+    }).attr('disabled', 'disabled');
+
+    $( "#total" ).calculatedfield( {
+//      formula: 'SUM(#ex1,FIELD_VALUE(#ex2.element))',
+      formula: '$SUM(.used-time)',
+    });
+
+
+
+  });
+
+
+  </script>
+<style>
+  body {max-width: 1200px; padding:2% 5%}
+  input {width: 100px; border: 0}
+  input.start-time, input.end-time, input.used-time, #total {text-align: right; padding-right: 5px}
+  input.start-time, input.end-time {width: 70px;}
+  input.used-time {width: 80px;}
+  input.category {width: 240px}
+  pre {font-family:monospace; padding: 10px; border: 1px solid #666; background-color: #eee}
+  input[readonly] {background-color: #eee}
+  table {border-collapse: collapse;}
+  td { border: 1px solid #ddd}
+  th {text-align: left; font-weight: normal; font-style: italic; font-size: 0.9em}
+  td {vertical-align: top; padding:0}
+  td pre {margin-top: 0px}
+
+  input {
+    background-color: white;
+    color: #666;
+  }
+
+
+</style>
+
+</head>
+<body>
+<h3>Timesheet</h3>
+<table>
+  <tr>
+    <th>Date</th>
+    <th>Start</th>
+    <th>End</th>
+    <th>Used time</th>
+    <th>Category</th>
+  </tr>
+  <tr>
+    <td><input class="date"></input></td>
+    <td><input class="start-time" value="8:5"></input></td>
+    <td><input class="end-time" value="10:15"></input></td>
+    <td><input class="used-time"></input></td>
+    <td><input class="category"></input></td>
+  </tr>  
+  <tr>
+    <td><input class="date"></input></td>
+    <td><input class="start-time"></input></td>
+    <td><input class="end-time"></input></td>
+    <td><input class="used-time"></input></td>
+    <td><input class="category"></input></td>
+  </tr>
+</table>
+<br>
+Total time spent: <input id="total"></input>
+</body>
+</html>

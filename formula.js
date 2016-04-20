@@ -32,7 +32,7 @@ Formula.prototype.triggerChangeCallback = function() {
 
 Formula.prototype.calc = function() {
   if (this.parseError()) {
-    return;
+    return 'Invalid formula';
   }
   return this.formulaFragment.calc();
 }
@@ -357,7 +357,7 @@ Formula.Fragment.prototype.removeChangeHandlers = function(formula) {
   for (var i=0; i<this.parameters.length; i++) {
     var p = this.parameters[i];
     if (p instanceof Formula.Fragment) {
-      p.addChangeHandlers(formula);
+      p.removeChangeHandlers(formula);
     }
 
     // Handle reference

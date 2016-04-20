@@ -260,10 +260,10 @@ Formula.addFunction = function(fname, fn) {
   Formula.functions[fname] = fn;
 }
 
-Formula.addFunctions = function(arr) {
-  for (var i=0; i<arr.length; i++) {
-    Formula.function_names.push(arr[i][0]);
-    Formula.functions[arr[i][0]] = arr[i][1];
+Formula.addFunctions = function() {
+  for (var i=0; i<arguments.length; i++) {
+    Formula.function_names.push(arguments[i][0]);
+    Formula.functions[arguments[i][0]] = arguments[i][1];
   }
 }
 

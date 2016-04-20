@@ -89,16 +89,13 @@ Formula.parseFormula = function(formula, formulaObj) {
       continue;
     }
 
-console.log(meal);
 
     // parse number
     if (reSniffNumber.test(meal)) {
-console.log('looks like a number!');
       var result = reParseNumber.exec(meal);
 //      console.log('parsing number' + meal);
 //      console.log(result);
       if (result == null) {
-console.log('but no');
         return;
       }
       var n = parseFloat(result[1]);

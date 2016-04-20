@@ -2,7 +2,7 @@
 // http://api.jqueryui.com/jQuery.widget/
 // https://learn.jquery.com/jquery-ui/widget-factory/how-to-use-the-widget-factory/
 
-$(function() {
+(function($) {
   $.widget( "formula.editablefield", {
     // default options
     options: {
@@ -75,14 +75,23 @@ $(function() {
 
     /* Set manual value */
     setManualValue: function(manualValue) {
+      var changedState = false;
+
       this.manualValue = null;
       if (manualValue == '') {
         this.manualValue = null;
         this.formulaResult = this.formula.calc();
-        this.element.removeClass( "manually-edited" );
+
+        if (this.element.hasClass('manually-edited')) {
+          this.element.removeClass( "manually-edited" );
+          changedState = true;
+        }
       }
       else {
-        this.element.addClass('manually-edited');
+        if (!this.element.hasClass('manually-edited')) {
+          this.element.addClass('manually-edited');
+          changedState = true;
+        }
         if (typeof this.options.deformatter == 'function') {
           this.manualValue = this.options.deformatter(manualValue);
         }
@@ -92,13 +101,19 @@ $(function() {
 
       }
       this._refresh();
+  
+      if (changedState) {
+        // trigger a callback/event ("editablefieldstatechange")
+        this._trigger( "statechange" );
+      }
+//      this.element.trigger('change');
     },
 
     _createFormulaObject: function() {
       var widget = this;
 
       // If there is an existing formula, remove its event handlers
-      if (this.formula instanceof Formula) {
+      if ((this.formula instanceof Formula) && (!this.formula.parseError())) {
         this.formula.formulaFragment.removeChangeHandlers();
       }
 
@@ -119,11 +134,12 @@ $(function() {
           widget.ignoreNextChangeEvent = true;
           widget.element.trigger('change');
         }
+
       });
       
     },
 
-    // called when created, and later when changing options
+    // called when created, when changing options, and when formula changes
     _refresh: function() {
       this.value = ((this.manualValue == null) ? this.formulaResult : this.manualValue);
       if (this.options.formatter) {
@@ -163,5 +179,5 @@ $(function() {
       this._super( key, value );
     }
   });
-});
+})(jQuery);
 

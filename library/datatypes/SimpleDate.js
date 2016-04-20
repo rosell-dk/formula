@@ -18,18 +18,22 @@ SimpleDate.parse = function(text, format) {
   var f = format;
 
   f = f.replace('MM', '((?:0[1-9])|(?:1[012]))');         // accept 01 - 12
-  f = f.replace('DD', '((?:0[1-9])|(?:[12]\\d)|3[01])');  // accept 01 - 31
+  f = f.replace('DD', '((?:0[1-9])|(?:[12]\\d)|(?:3[01]))');  // accept 01 - 31
   f = f.replace('YYYY', '(\\d\\d\\d\\d)');  // accept 0000 - 9999
 
-  f = f.replace('D', '((?:[1-9])|(?:[12]\\d)|(?:3[01]))'); // accept 1-31, not '01'
-  f = f.replace('M', '((?:[1-9])|(?:[1][012]))'); // accept 1-12, not '01'
+  f = f.replace('D', '((?:[12]\\d)|(?:3[01])|(?:[1-9]))'); // accept 1-31, not '01'
+  f = f.replace('M', '((?:[1][012])|(?:[1-9]))'); // accept 1-12, not '01'
+
+//  f = f.replace('H', '((?:[0-1]\\d)|(?:2[0-3])|(?:\\d))'); // accept 0-23, - ALSO '00', '01', etc
+//  f = f.replace('m', '((?:[0-5]\\d)|(?:\\d))'); // accept 0-59, - ALSO '00', '01', etc
 
   f = '^' + f + '$';
 
+console.log(f);
   var re = new RegExp(f);
   var result = text.match(re);
   if (result == null) {
-//    alert('could not parse "' + text + '" according to format: "' + format + '"');
+    console.log('could not parse "' + text + '" according to format: "' + format + '"');
     var sd = new SimpleDate();
     sd.valid = false;
     return sd;
@@ -74,13 +78,13 @@ SimpleDate.parse = function(text, format) {
     var token = positions[i-1].token;
     switch (token) {
       case 'YYYY':
-        year = result[i];
+        year = parseInt(result[i], 10);
         break;
       case 'M':
-        month = result[i];
+        month = parseInt(result[i], 10);
         break;
       case 'D':
-        day = result[i];
+        day = parseInt(result[i], 10);
         break;
     }
   }
@@ -203,4 +207,17 @@ Formula.addFunction('SIMPLEDATE_ADD_DAYS', function(sd, daysToAdd) {
   var d = new Date(ms);
   return new SimpleDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
 });
+
+Formula.addFunction('SIMPLEDATE_DAYS_IN_MONTH', function(sd) {
+  // http://stackoverflow.com/questions/1184334/get-number-days-in-a-specified-month-using-javascript
+  return new Date(sd.year, sd.month, 0).getDate();
+});
+
+/* Note: Excell EOMONTH also takes a second argument */
+Formula.addFunction('SIMPLEDATE_EOMONTH', function(sd) {
+  // http://stackoverflow.com/questions/1184334/get-number-days-in-a-specified-month-using-javascript
+  var day = new Date(sd.year, sd.month, 0).getDate();
+  return new SimpleDate(sd.year, sd.month, day);
+});
+
 

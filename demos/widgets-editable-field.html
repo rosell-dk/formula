@@ -16,19 +16,48 @@
 
   <script>
 
+  function numVal(obj) {
+    if (typeof obj == 'string') {
+      if (obj == '') {
+        return 0;
+      }
+      return parseFloat(obj);
+    }
+    if (typeof obj == 'number') {
+      return obj;
+    }
+    return NaN;
+  }
 
-  Formula.addFunctions([
+  Formula.addFunctions(
     ['SUM', function() {
       var result=0;
       for (var i=0; i<arguments.length; i++) {
-        result += parseFloat(arguments[i]);
+        result += numVal(arguments[i]);
       }
       return result;
     }],
     ['MANUALLY_EDITED', function(elm) {
       return $(elm).hasClass('manually-edited');
+    }],
+    ['IF', function(test, a, b) {
+      return (test ? a : b);
+    }],
+    ['MULTIPLY', function() {
+      var result=1;
+      for (var i=0; i<arguments.length; i++) {
+        result *= numVal(arguments[i]);
+      }
+      return result;
+    }],
+    ['DIVIDE', function() {
+      var result = numVal(arguments[0]);
+      for (var i=1; i<arguments.length; i++) {
+        result /= numVal(arguments[i]);
+      }
+      return result;
     }]
-  ]);
+  );
   
 
   function dollarFormatter(text) {
@@ -81,6 +110,73 @@
       formula: 'MANUALLY_EDITED(#ex3.element)',
       editable: false
     });
+
+
+    /**
+     *  Format number, two
+     *  0 => '0.00'
+     */
+    function numberFormatterTwoDigits(num) {
+      var text = num.toFixed(2);
+      text = text.replace('.', ',');
+      return text;
+    }
+
+    /**
+     *  Format price. Ie 10000 -> '10000.00'
+     */
+    function numberFormatterTwoDigitsZeroAsEmpty(num) {
+      if (num == 0) {
+        return '';
+      }
+      return numberFormatterTwoDigits(num);
+    }
+
+    /**
+     *  Deformats two-digit number. Ie '10000.00' -> 10000
+     */
+    function numberDeformatterTwoDigits(text) {
+      if (typeof text == 'number') {
+    //alert(text);
+        return text;
+      }
+      if (text == '') {
+        return 0;
+      }
+      return parseFloat(text);
+    }
+
+    $( "#inches" ).on('editablefieldstatechange', function() {
+      if ( $( "#inches" ).hasClass('manually-edited')) {
+        // Make #cm change state to calculated field
+//        $( "#cm" ).val('');
+//        $( "#cm" ).trigger('change');
+      }
+    });
+
+    $( "#cm" ).on('editablefieldstatechange', function() {
+      if ( $( "#cm" ).hasClass('manually-edited')) {
+        // Make #inches change state to calculated field
+//        $( "#inches" ).val('');
+//        $( "#inches" ).trigger('change');
+      }
+    });
+
+    $( "#inches" ).editablefield( {
+//      formula: 'IF(MANUALLY_EDITED(#cm.element),DIVIDE(#cm,2.54),"")',
+      formula: 'DIVIDE(#cm,2.54)',
+      formatter: numberFormatterTwoDigitsZeroAsEmpty,
+      deformatter: numberDeformatterTwoDigits,
+      editable: true
+    });
+    $( "#cm" ).editablefield( {
+//      formula: 'IF(MANUALLY_EDITED(#inches.element),MULTIPLY(#inches,2.54),"")',
+      formula: 'MULTIPLY(#inches,2.54)',
+      formatter: numberFormatterTwoDigitsZeroAsEmpty,
+      deformatter: numberDeformatterTwoDigits,
+      editable: true
+    });
+
 
 
   });
@@ -141,6 +237,18 @@ Formula.addFunction('MANUALLY_EDITED', function(elm) {
 });
 </pre>
 Is sum manually edited? <input id="ex6" ></input><br>
+
+<h3>Circular referencing</h3>
+<p>Below, the user can convert from inches to centimeters, or the other way round. The circular reference actually does not end up in regress, because the formula of a field gets deactivated, when the field is edited.</p>
+<div>
+  <label for="inches">Inches</label>
+  <input id="inches"></input>
+</div>
+<div>
+  <label for="cm">Cm</label>
+  <input id="cm"></input>
+</div>
+
 
 </body>
 </html>

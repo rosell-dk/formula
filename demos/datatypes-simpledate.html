@@ -51,9 +51,9 @@ SimpleDate.defaultFormat = 'MM-DD-YYYY';
 <p>
 To format a SimpleDate, use SIMPLEDATE_FORMAT(date [SimpleDate], format [String]). You can use the tokens: YYYY, MM, DD, M, D.
 </p>
-YYYY-MM-DD: <input data-formula="SIMPLEDATE_FORMAT(SIMPLEDATE_TODAY(), 'YYYY-MM-DD')" readonly></input><br>
-YYYY-M-D: <input data-formula="SIMPLEDATE_FORMAT(SIMPLEDATE_TODAY(), 'YYYY-M-D')" readonly></input><br>
-M/D YYYY: <input data-formula="SIMPLEDATE_FORMAT(SIMPLEDATE_TODAY(), 'M/D YYYY')" readonly></input><br>
+YYYY-MM-DD: <input data-formula='SIMPLEDATE_FORMAT(SIMPLEDATE_TODAY(), "YYYY-MM-DD")' readonly></input><br>
+YYYY-M-D: <input data-formula='SIMPLEDATE_FORMAT(SIMPLEDATE_TODAY(), "YYYY-M-D")' readonly></input><br>
+M/D YYYY: <input data-formula='SIMPLEDATE_FORMAT(SIMPLEDATE_TODAY(), "M/D YYYY")' readonly></input><br>
 <p>
 You can set up a defalt format by setting SimpleFormat.defaultFormat. In this demo, it has been set to 'MM-DD-YYYY'.
 To format a date using the default format, simply calling SIMPLEDATE_FORMAT(date [SimpleDate]):
@@ -70,21 +70,21 @@ You can simplify the above formula to: <input data-formula="SIMPLEDATE_TODAY()" 
 To parse a SimpleDate, use SIMPLEDATE_PARSE(date[String], format[String]). You can use the tokens: YYYY, MM, DD, M and D
 </p>
 Examples:<br>
-<input data-formula="SIMPLEDATE_PARSE('0309-1972', 'DDMM-YYYY')" readonly></input><br>
-<input data-formula="SIMPLEDATE_PARSE('1972-21-2', 'YYYY-D-M')" readonly></input><br>
-<input data-formula="SIMPLEDATE_PARSE('39-1972', 'DM-YYYY')" readonly></input><br>
-Omitting year: <input data-formula="SIMPLEDATE_PARSE('21-02', 'DD-MM')" readonly></input><br>
+<input data-formula='SIMPLEDATE_PARSE("0309-1972", "DDMM-YYYY")' readonly></input><br>
+<input data-formula='SIMPLEDATE_PARSE("1972-21-2", "YYYY-D-M")' readonly></input><br>
+<input data-formula='SIMPLEDATE_PARSE("39-1972", "DM-YYYY")' readonly></input><br>
+Omitting year: <input data-formula='SIMPLEDATE_PARSE("21-02", "DD-MM")' readonly></input><br>
 
 <p>If parse fails, you will get a SimpleDate object which represents an invalid date.</p>
 Formatting an invalid date results in the string 'Invalid date' (you can change this by setting SimpleDate.invalidDate)
 
 <p>Example:
-Parse error: <input data-formula="SIMPLEDATE_PARSE('21-2-72', 'D-M-YYYY')" readonly></input><br>
-Non-existent date: <input data-formula="SIMPLEDATE_PARSE('31-02-1972', 'DD-MM-YYYY')" readonly></input><br>
+Parse error: <input data-formula='SIMPLEDATE_PARSE("21-2-72", "D-M-YYYY")' readonly></input><br>
+Non-existent date: <input data-formula='SIMPLEDATE_PARSE("31-02-1972", "DD-MM-YYYY")' readonly></input><br>
 </p>
 
 <p>You can test if a date is valid with SIMPLEDATE_IS_VALID:
-<input data-formula="SIMPLEDATE_IS_VALID(SIMPLEDATE_PARSE('21-2-72', 'D-M-YYYY'))" readonly></input>
+<input data-formula='SIMPLEDATE_IS_VALID(SIMPLEDATE_PARSE("21-2-72", "D-M-YYYY"))' readonly></input>
 </p>
 
 <p>Not tired out yet? try more parsing below:</p>

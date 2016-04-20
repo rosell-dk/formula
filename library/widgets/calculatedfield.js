@@ -2,6 +2,8 @@
 // http://api.jqueryui.com/jQuery.widget/
 // https://learn.jquery.com/jquery-ui/widget-factory/how-to-use-the-widget-factory/
 
+// TODO: Display Parse error
+
 $(function() {
   $.widget( "formula.calculatedfield", {
     // default options
@@ -29,7 +31,10 @@ $(function() {
         }
       }
 
+//      this.formula.element = 'hej';//this.element;
       this._createFormulaObject();
+
+      // Make it possible to reference the current calculatedfield in a formula
 
       this.value = this.formula.calc();
 
@@ -44,7 +49,7 @@ $(function() {
       var widget = this;
 
       // If there is an existing formula, remove its event handlers
-      if (this.formula instanceof Formula) {
+      if ((this.formula instanceof Formula) && (!this.formula.parseError())) {
         this.formula.formulaFragment.removeChangeHandlers();
       }
 
@@ -61,23 +66,25 @@ $(function() {
           // Trigger a change event on the input element, in case another formula is listening
           widget.element.trigger('change');
         }
-      });
-      
+      }, this.element);
+
     },
 
     // called when created, and later when changing options
     _refresh: function() {
-
-      if (this.options.formatter) {
-        this.element.val(this.options.formatter(this.value));
+/*      if (this.formula.parseError()) {
+        this.element.val('Invalid formula');
       }
-      else {
-        this.element.val(this.value);
-      }
-
+      else {*/
+        if (this.options.formatter) {
+          this.element.val(this.options.formatter(this.value));
+        }
+        else {
+          this.element.val(this.value);
+        }
+      //}
       // trigger a callback/event ("calculatedfieldchange")
       this._trigger( "change" );
-
     },
 
 

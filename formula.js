@@ -64,7 +64,7 @@ Formula.parseFormula = function(formula, formulaObj) {
   var reSniffNumber = /^[-+]?[0-9]/
   
   // RegEx's for parsing
-  var reParseNumber = /^([-+]?(?:[0-9]+[.][0-9]+)|(?:[0-9]+))/
+  var reParseNumber = /^([-+]{0,1}(?:(?:[0-9]+[.][0-9]+)|(?:[0-9]+)))/
   var reFindString = /^"((?:[^"]|"")*)"/
   var reUndoublequoteString = /""/
 
@@ -73,7 +73,6 @@ Formula.parseFormula = function(formula, formulaObj) {
   mainloop:
   while ((meal != '') && (i<99)) {
     meal = meal.trimLeft();
-
     i++
     // parse function start
     if (reSniffFunction.test(meal)) {
@@ -90,12 +89,16 @@ Formula.parseFormula = function(formula, formulaObj) {
       continue;
     }
 
+console.log(meal);
+
     // parse number
     if (reSniffNumber.test(meal)) {
+console.log('looks like a number!');
       var result = reParseNumber.exec(meal);
 //      console.log('parsing number' + meal);
 //      console.log(result);
       if (result == null) {
+console.log('but no');
         return;
       }
       var n = parseFloat(result[1]);

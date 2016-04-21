@@ -113,6 +113,7 @@ $(function() {
     // revert other modifications here
     _destroy: function() {
       this.element.removeClass( "calculated-field" )
+      this.unbindReferences();
     },
 
     // _setOptions is called with a hash of all options that are changing

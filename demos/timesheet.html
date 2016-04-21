@@ -147,15 +147,13 @@
   }
 
   function setSheet(data) {
-    // TODO: remove all rows first
-
-/*    $( "#total" ).calculatedfield( "option", {
-      formula: '""'
-    });*/
 
     // Passivate the field, so it doesn't need to recalculate
     // each time a dependent field is added
     $( "#total" ).calculatedfield('unbindReferences');
+
+    // Remove all rows after the template row
+    $( "#sheet tr#template_row ~ tr" ).remove();
 
     for (var row=0; row<data.length; row++) {
       var rowData = data[row];
@@ -180,12 +178,6 @@
     // Now, activate it again, and recalculate
     $( "#total" ).calculatedfield('bindReferences');
     $( "#total" ).calculatedfield('calc');
-
-/*
-    $( "#total" ).calculatedfield( "option", {
-      formula: '$SUM(.usedtime)'
-    });      */
-
   }
 
   $(function() { 
@@ -208,7 +200,7 @@
       }
     });
 
-    $(document).on('keyup', function(e) {
+    $(document).on('keydown', function(e) {
       var $target = $(e.target);
 
       if (($target.is(':input')) && ($target.parents('#sheet').length == 1)) {
@@ -234,7 +226,14 @@
     setSheet([
       {starttime:'10:10', endtime:'12:12'},
       {starttime:'14:10', endtime:'15:12'},
-    ])
+    ]);
+
+    setSheet([
+      {starttime:'10:10', endtime:'12:12'},
+      {starttime:'13:10', endtime:'15:12'},
+    ]);
+
+//    console.log(getSheet());
   });
 
 

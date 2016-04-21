@@ -37,7 +37,7 @@
       if (this.options.editable) {
         var widget = this;
         this.element.on( "change", function() {
-          widget.setValue($(this).val());
+          widget.setValueFromFormattedValue($(this).val());
         });
       }
       else {
@@ -54,7 +54,7 @@
     },
 
     /* Set value */
-    setValue: function(value) {
+    setValueFromFormattedValue: function(value) {
       if (typeof this.options.deformatter == 'function') {
         this.value = this.options.deformatter(value);
       }

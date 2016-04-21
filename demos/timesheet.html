@@ -45,6 +45,13 @@
       return text;
     }
   }
+  function factoryHoursFormatter(num) {
+    var text = twoDigitsFormatterZeroAsEmpty(num);
+    if (text.length > 0) {
+      text += 'h';
+    }
+    return text;
+  }
 
   function fieldValue($elm) {
     if ($elm.hasClass('formatted-field')) {
@@ -63,9 +70,10 @@
       return result;
     }],
     ['USEDTIME', function(startTime, endTime) {
-      //IF(AND(SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:end-time)),SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:start-time))),SIMPLETIME_SUBTRACT(SIMPLETIME_PARSE(row:end-time),SIMPLETIME_PARSE(row:start-time)), "")
+      //IF(AND(SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:endtime)),SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:starttime))),SIMPLETIME_SUBTRACT(SIMPLETIME_PARSE(row:endtime),SIMPLETIME_PARSE(row:starttime)), "")
 //      if ((startTime == null) || (endTime == null)) {
       if ((!SimpleTime.isValidSimpleTime(startTime)) || (!SimpleTime.isValidSimpleTime(endTime))) {
+//        console.log(startTime);
         return '';
       }
       return SimpleTime.subtract(endTime, startTime).toFactoryTime();
@@ -117,37 +125,96 @@
     }
   });
 
+  function addRow() {
+    $row = $('#template_row').clone();
+    $row.removeAttr('id');
+
+    $row.find( ".starttime" ).add($row.find( ".endtime" )).formattedfield( {
+      formatter: timeOrEmptyFormatter,
+      deformatter: timeOrEmptyDeformatter,
+//      value: new SimpleTime(10,10)
+    });
+
+    $row.appendTo('#sheet');
+
+    $row.find( ".usedtime" ).calculatedfield( {
+      formula: 'USEDTIME(row:starttime,row:endtime)',
+//      formula: 'SUM(1,2)',
+      formatter: factoryHoursFormatter,
+    }).attr('disabled', 'disabled');
+
+    return $row;
+  }
+
+  function setSheet(data) {
+    // TODO: remove all rows first
+
+    $( "#total" ).calculatedfield( "option", {
+      formula: '""'
+    });      
+
+    for (var row=0; row<data.length; row++) {
+      var rowData = data[row];
+
+      $row = addRow(rowData);
+
+      $row.find('input').each(function() {
+        var colname = $(this).attr('data-colname');
+        if (rowData[colname]) {
+          if ($(this).hasClass('formatted-field')) {
+            $(this).formattedfield('setValueFromFormattedValue', rowData[colname]);
+          }
+          else {
+            $(this).val(rowData[colname]);
+          }
+        }
+      });
+    }
+
+    $('#sheet').find('input').trigger('change');
+
+    $( "#total" ).calculatedfield( "option", {
+      formula: '$SUM(.usedtime)'
+    });      
+
+  }
 
   $(function() { 
 
-    $( ".start-time" ).add( ".end-time" ).formattedfield( {
-      formatter: timeOrEmptyFormatter,
-      deformatter: timeOrEmptyDeformatter,
-    });
 
-    $( ".used-time" ).calculatedfield( {
-//      formula: 'IF(AND(SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:end-time)),SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:start-time))),SIMPLETIME_SUBTRACT(SIMPLETIME_PARSE(row:end-time),SIMPLETIME_PARSE(row:start-time)), "")',
-      formula: 'USEDTIME(row:start-time,row:end-time)',
-      formatter: twoDigitsFormatterZeroAsEmpty,
-    }).attr('disabled', 'disabled');
 
     $( "#total" ).calculatedfield( {
 //      formula: 'SUM(#ex1,FIELD_VALUE(#ex2.element))',
-      formula: '$SUM(.used-time)',
+      formula: '$SUM(.usedtime)',
+      formatter: factoryHoursFormatter
     });
 
+    $(document).on('change', function(e) {
+      if ($(e.target).closest('tr').is(':last-child')) {
+        addRow();
+        $( "#total" ).calculatedfield( "option", {
+          formula: '$SUM(.usedtime)'
+        });      
 
+      }
+    })
 
+//    addRow(); 
+
+    setSheet([
+      {starttime:'10:10', endtime:'12:12'},
+      {starttime:'14:10', endtime:'15:12'},
+    ])
   });
 
 
   </script>
 <style>
   body {max-width: 1200px; padding:2% 5%}
-  input {width: 100px; border: 0}
-  input.start-time, input.end-time, input.used-time, #total {text-align: right; padding-right: 5px}
-  input.start-time, input.end-time {width: 70px;}
-  input.used-time {width: 80px;}
+  input {width: 100px; border: 0; padding:2px 5px; display: block;}
+  input.starttime, input.endtime, input.usedtime, #total {text-align: right;}
+  input.starttime, input.endtime {width: 70px;}
+  input.usedtime {width: 80px;}
   input.category {width: 240px}
   pre {font-family:monospace; padding: 10px; border: 1px solid #666; background-color: #eee}
   input[readonly] {background-color: #eee}
@@ -161,6 +228,9 @@
     background-color: white;
     color: #666;
   }
+  #template_row {
+    display: none;
+  }
 
 
 </style>
@@ -168,7 +238,7 @@
 </head>
 <body>
 <h3>Timesheet</h3>
-<table>
+<table id="sheet">
   <tr>
     <th>Date</th>
     <th>Start</th>
@@ -176,21 +246,15 @@
     <th>Used time</th>
     <th>Category</th>
   </tr>
-  <tr>
-    <td><input class="date"></input></td>
-    <td><input class="start-time" value="8:5"></input></td>
-    <td><input class="end-time" value="10:15"></input></td>
-    <td><input class="used-time"></input></td>
-    <td><input class="category"></input></td>
-  </tr>  
-  <tr>
-    <td><input class="date"></input></td>
-    <td><input class="start-time"></input></td>
-    <td><input class="end-time"></input></td>
-    <td><input class="used-time"></input></td>
-    <td><input class="category"></input></td>
+  <tr id="template_row">
+    <td><input class="date" data-colname="date"></input></td>
+    <td><input class="starttime" data-colname="starttime"></input></td>
+    <td><input class="endtime" data-colname="endtime"></input></td>
+    <td><input class="usedtime" data-colname="usedtime"></input></td>
+    <td><input class="category" data-colname="category"></input></td>
   </tr>
 </table>
+
 <br>
 Total time spent: <input id="total"></input>
 </body>

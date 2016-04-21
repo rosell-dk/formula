@@ -19,8 +19,20 @@ var Formula = function(formula, resultChangedCallBack, backReference) {
   }, 100);
 
   this.formulaFragment = Formula.parseFormula(formula, this);
+
+  this.bindReferences();
+}
+
+/* Bind references (aka Bound variables) */
+Formula.prototype.bindReferences = function() {
   if (this.formulaFragment !== undefined) {
     this.formulaFragment.addChangeHandlers(this);
+  }
+}
+
+Formula.prototype.unbindReferences = function() {
+  if (this.formulaFragment !== undefined) {
+    this.formulaFragment.removeChangeHandlers(this);
   }
 }
 

@@ -206,7 +206,28 @@
         });      
 
       }
-    })
+    });
+
+    $(document).on('keyup', function(e) {
+      var $target = $(e.target);
+
+      if (($target.is(':input')) && ($target.parents('#sheet').length == 1)) {
+        if ((e.key == 'ArrowLeft') && ($target.val() == '')) {
+          $target.closest('td').prevAll().find('input:enabled').last().focus().select();
+        }
+        if ((e.key == 'ArrowRight') && ($target.val() == '')) {
+          $target.closest('td').nextAll().find('input:enabled').first().focus().select();
+        }
+        if (e.key == 'ArrowDown') {
+          var $nextRow = $target.closest('tr').next();
+          $nextRow.find('input[data-colname=' + $target.attr('data-colname') + ']').focus().select();
+        }
+        if (e.key == 'ArrowUp') {
+          var $prevRow = $target.closest('tr').prev();
+          $prevRow.find('input[data-colname=' + $target.attr('data-colname') + ']').focus().select();
+        }
+      }
+    });
 
 //    addRow(); 
 

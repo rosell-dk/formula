@@ -150,7 +150,7 @@ SimpleTime.subtract = function(st1, st2) {
   var st1secs = st1.toSeconds();
   var st2secs = st2.toSeconds();
   var secs;
-  if (st1secs > st2secs) {
+  if (st1secs >= st2secs) {
     secs = st1secs - st2secs;
   }
   else {

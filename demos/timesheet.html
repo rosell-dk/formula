@@ -146,7 +146,7 @@
     return $row;
   }
 
-  function setSheet(data) {
+  function setSheetData(data) {
 
     // Passivate the field, so it doesn't need to recalculate
     // each time a dependent field is added
@@ -160,7 +160,10 @@
 
       $row = addRow(rowData);
 
-      $row.find('input').each(function() {
+      // We actually let the template row define what data to look for.
+      // (setting the "data-data" attribute is a signal to getSheetData and setSheetData that a
+      // field should be set/get (the "data-colname" defines the property)
+      $row.find('input[data-data][data-colname]').each(function() {
         var colname = $(this).attr('data-colname');
         if (rowData[colname]) {
           if ($(this).hasClass('formatted-field')) {
@@ -178,6 +181,36 @@
     // Now, activate it again, and recalculate
     $( "#total" ).calculatedfield('bindReferences');
     $( "#total" ).calculatedfield('calc');
+  }
+
+  // Get sheet data.
+  // In this example, we get the formatted values.
+  function getSheetData() {
+
+    var data = [];
+
+    // Get relevant rows (those after the template row)
+    $rows =  $( "#sheet tr#template_row ~ tr" );
+
+    $rows.each(function () {
+      var rowData = {};
+      var emptyRow = true;
+      $(this).find('input[data-data][data-colname]').each(function() {
+        var colname = $(this).attr('data-colname');
+//       var value = $(this).formattedfield('getValue');
+
+        var formattedValue = $(this).val();
+        if (formattedValue != '') {
+          rowData[colname] = formattedValue;
+          emptyRow = false;
+        }
+      });
+      if (!emptyRow) {
+        data.push(rowData);
+      }
+    });
+
+    return data;
   }
 
   $(function() { 
@@ -223,17 +256,13 @@
 
 //    addRow(); 
 
-    setSheet([
+    setSheetData([
       {starttime:'10:10', endtime:'12:12'},
-      {starttime:'14:10', endtime:'15:12'},
+      {task:'Formula engine', starttime:'14:10', endtime:'15:12'},
     ]);
 
-    setSheet([
-      {starttime:'10:10', endtime:'12:12'},
-      {starttime:'13:10', endtime:'15:12'},
-    ]);
-
-//    console.log(getSheet());
+    console.log(getSheetData());
+    console.log(JSON.stringify(getSheetData()));
   });
 
 
@@ -242,14 +271,14 @@
   body {max-width: 1200px; padding:2% 5%}
   input {width: 100px; border: 0; padding:2px 5px; display: block;}
   input.starttime, input.endtime, input.usedtime, #total {text-align: right;}
-  input.starttime, input.endtime {width: 70px;}
+  input.starttime, input.endtime {width: 60px;}
   input.usedtime {width: 80px;}
   input.category {width: 240px}
   pre {font-family:monospace; padding: 10px; border: 1px solid #666; background-color: #eee}
   input[readonly] {background-color: #eee}
   table {border-collapse: collapse;}
   td { border: 1px solid #ddd}
-  th {text-align: left; font-weight: normal; font-style: italic; font-size: 0.9em}
+  th {text-align: left; font-weight: normal; font-style: italic; font-size: 0.9em; padding-left: 3px}
   td {vertical-align: top; padding:0}
   td pre {margin-top: 0px}
 
@@ -273,14 +302,14 @@
     <th>Start</th>
     <th>End</th>
     <th>Used time</th>
-    <th>Category</th>
+    <th>Task</th>
   </tr>
   <tr id="template_row">
-    <td><input class="date" data-colname="date"></input></td>
-    <td><input class="starttime" data-colname="starttime"></input></td>
-    <td><input class="endtime" data-colname="endtime"></input></td>
+    <td><input class="date" data-colname="date" data-data></input></td>
+    <td><input class="starttime" data-colname="starttime" data-data></input></td>
+    <td><input class="endtime" data-colname="endtime" data-data></input></td>
     <td><input class="usedtime" data-colname="usedtime"></input></td>
-    <td><input class="category" data-colname="category"></input></td>
+    <td><input class="task" data-colname="task" data-data></input></td>
   </tr>
 </table>
 

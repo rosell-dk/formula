@@ -45,13 +45,34 @@ $(function() {
       return this.value;
     },
 
+    isFormulaValid: function() {
+      return ((this.formula instanceof Formula) && (!this.formula.parseError()));
+    },
+
+    unbindReferences: function() {
+      if (this.isFormulaValid()) {
+        this.formula.unbindReferences();
+      }
+    },
+
+    bindReferences: function() {
+      if (this.isFormulaValid()) {
+        this.formula.bindReferences();
+      }
+    },
+
+    calc: function() {
+      if (this.isFormulaValid()) {
+        this.value = this.formula.calc();
+        this._refresh();
+      }
+    },
+
     _createFormulaObject: function() {
       var widget = this;
 
       // If there is an existing formula, remove its event handlers
-      if ((this.formula instanceof Formula) && (!this.formula.parseError())) {
-        this.formula.formulaFragment.removeChangeHandlers();
-      }
+      this.unbindReferences();
 
       this.formula = new Formula(this.options.formula, function() {
         var oldValue = widget.value;

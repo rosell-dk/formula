@@ -15,8 +15,8 @@
   <script src="../library/datatypes/boolean.js"></script>
   <script src="../library/datatypes/number.js"></script>
 
-  <script src="../library/widgets/calculatedfield.js"></script>
-  <script src="../library/widgets/formattedfield.js"></script>
+  <script src="../library/widgets/cell.js"></script>
+  <script src="../library/widgets/cell.js"></script>
 
   <script>
 
@@ -54,8 +54,8 @@
   }
 
   function fieldValue($elm) {
-    if ($elm.hasClass('formatted-field')) {
-      return $elm.formattedfield('getValue');
+    if ($elm.hasClass('cell')) {
+      return $elm.cell('getValue');
     }
     return $elm.val();
   }
@@ -68,6 +68,49 @@
         result += numVal(fieldValue($(this)));
       });
       return result;
+    }],
+    ['$BREAKDOWN', function($usedTimes, $tasks) {
+      var taskTimes = {};
+      var tasks = [];
+      for (var i=0; i<$tasks.length; i++) {
+        var task = $tasks[i].value;
+        if (task == '') {
+          task = 'Unspecified';
+        }
+
+        if (taskTimes[task] === undefined) {
+          taskTimes[task] = 0;
+          tasks.push(task);
+        }
+      }
+      for (var i=0; i<$usedTimes.length; i++) {
+//        var formattedTime = $usedTimes[i].value;
+        var usedTime = fieldValue($($usedTimes[i]));
+        if (usedTime != '') {
+          var task = $($usedTimes[i]).closest('tr').find('[data-colname=task]').val();
+          if (task == '') {
+            task = 'Unspecified';
+          }
+          taskTimes[task] += usedTime;
+        }
+      }
+      tasks.sort();
+      var total = 0;
+      var text = '<table>';
+      for (var i=0; i<tasks.length; i++) {
+        var task = tasks[i];
+        if (taskTimes[task] == 0) {
+          continue;
+        }
+        total += taskTimes[task];
+        text += '<tr><td>' + task + '</td><td>' + factoryHoursFormatter(taskTimes[task]) + '</td></tr>';
+      }
+      text += '<tr><td colspan=2><hr></td></tr>';
+      text += '<tr><td>Total</td><td>' + factoryHoursFormatter(total) + '</td></tr>';
+      text += '</table>';
+      $('#breakdown-output').html(text);
+      
+      return '';
     }],
     ['USEDTIME', function(startTime, endTime) {
       //IF(AND(SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:endtime)),SIMPLETIME_IS_VALID(SIMPLETIME_PARSE(row:starttime))),SIMPLETIME_SUBTRACT(SIMPLETIME_PARSE(row:endtime),SIMPLETIME_PARSE(row:starttime)), "")
@@ -85,8 +128,8 @@
     if (text.substr(0,4) != 'row:') return
     var columnClass = text.substr(4);
 
-    var $calculatedField = formulaObj.backReference;
-    var $elm = $calculatedField.closest('tr').find('.' + columnClass);
+    var $cell = formulaObj.backReference;
+    var $elm = $cell.closest('tr').find('.' + columnClass);
 
     if ($elm.length == 0) {
       return '#REF error';
@@ -105,22 +148,26 @@
   });
 
   // Add "." reference-parser, which can reference SEVERAL cells
-  // It returns an array with the cell values
+  // getValue returns a jquery object containing matched elements.
+  // If you are going to have dynamic HTML, which will cause match to change,
+  // you will have to run "unbindReferences()" on the cell widget / formula before the change,
+  // and "bindReferences()" after the change
   Formula.addParser(function(text, formulaObj) {
     if (text[0] != '.') return
     var className = text.substr(1);
 
-    var $elements = $(text);
+    var $elementsWithChangeHandlers;
 
     return {
       getValue: function () {
-        return $elements;
+        return $(text);
       },
       setChangeCallback: function(changeCallback) {
-        $elements.on("change", changeCallback);
+        $elementsWithChangeHandlers = $(text);
+        $elementsWithChangeHandlers.on("change", changeCallback);
       },
       removeChangeCallback: function(changeCallback) {
-        $elements.off("change", changeCallback);
+        $elementsWithChangeHandlers.off("change", changeCallback);
       }
     }
   });
@@ -129,7 +176,7 @@
     $row = $('#template_row').clone();
     $row.removeAttr('id');
 
-    $row.find( ".starttime" ).add($row.find( ".endtime" )).formattedfield( {
+    $row.find( ".starttime" ).add($row.find( ".endtime" )).cell( {
       formatter: timeOrEmptyFormatter,
       deformatter: timeOrEmptyDeformatter,
 //      value: new SimpleTime(10,10)
@@ -137,7 +184,7 @@
 
     $row.appendTo('#sheet');
 
-    $row.find( ".usedtime" ).calculatedfield( {
+    $row.find( ".usedtime" ).cell( {
       formula: 'USEDTIME(row:starttime,row:endtime)',
 //      formula: 'SUM(1,2)',
       formatter: factoryHoursFormatter,
@@ -150,7 +197,10 @@
 
     // Passivate the field, so it doesn't need to recalculate
     // each time a dependent field is added
-    $( "#total" ).calculatedfield('unbindReferences');
+    $( "#total" ).cell('unbindReferences');
+    $( "#breakdown" ).cell('unbindReferences');
+
+    $(document).off('change', addRowIfNeeded);
 
     // Remove all rows after the template row
     $( "#sheet tr#template_row ~ tr" ).remove();
@@ -158,7 +208,7 @@
     for (var row=0; row<data.length; row++) {
       var rowData = data[row];
 
-      $row = addRow(rowData);
+      $row = addRow();
 
       // We actually let the template row define what data to look for.
       // (setting the "data-data" attribute is a signal to getSheetData and setSheetData that a
@@ -166,8 +216,8 @@
       $row.find('input[data-data][data-colname]').each(function() {
         var colname = $(this).attr('data-colname');
         if (rowData[colname]) {
-          if ($(this).hasClass('formatted-field')) {
-            $(this).formattedfield('setValueFromFormattedValue', rowData[colname]);
+          if ($(this).hasClass('cell')) {
+            $(this).cell('setValueFromFormattedValue', rowData[colname]);
           }
           else {
             $(this).val(rowData[colname]);
@@ -176,11 +226,19 @@
       });
     }
 
+    addRow();
+
     $('#sheet').find('input').trigger('change');
 
     // Now, activate it again, and recalculate
-    $( "#total" ).calculatedfield('bindReferences');
-    $( "#total" ).calculatedfield('calc');
+    $( "#total" ).cell('bindReferences');
+    $( "#total" ).cell('calc');
+
+    $( "#breakdown" ).cell('bindReferences');
+    $( "#breakdown" ).cell('calc');
+
+    $(document).on('change', addRowIfNeeded);
+
   }
 
   // Get sheet data.
@@ -197,7 +255,7 @@
       var emptyRow = true;
       $(this).find('input[data-data][data-colname]').each(function() {
         var colname = $(this).attr('data-colname');
-//       var value = $(this).formattedfield('getValue');
+//       var value = $(this).cell('getValue');
 
         var formattedValue = $(this).val();
         if (formattedValue != '') {
@@ -213,25 +271,36 @@
     return data;
   }
 
+  function addRowIfNeeded(e) {
+    if ($(e.target).closest('tr').is(':last-child')) {
+
+      $( "#total" ).cell('unbindReferences');
+      $( "#breakdown" ).cell('unbindReferences');
+
+      addRow();
+
+      $( "#total" ).cell('bindReferences');
+      $( "#breakdown" ).cell('bindReferences');
+
+    }
+  }
+
   $(function() { 
 
 
 
-    $( "#total" ).calculatedfield( {
+    $( "#total" ).cell( {
 //      formula: 'SUM(#ex1,FIELD_VALUE(#ex2.element))',
       formula: '$SUM(.usedtime)',
       formatter: factoryHoursFormatter
     });
 
-    $(document).on('change', function(e) {
-      if ($(e.target).closest('tr').is(':last-child')) {
-        addRow();
-        $( "#total" ).calculatedfield( "option", {
-          formula: '$SUM(.usedtime)'
-        });      
-
-      }
+    $( "#breakdown" ).cell( {
+      formula: '$BREAKDOWN(.usedtime, .task)',
     });
+
+
+    $(document).on('change', addRowIfNeeded);
 
     $(document).on('keydown', function(e) {
       var $target = $(e.target);
@@ -257,9 +326,15 @@
 //    addRow(); 
 
     setSheetData([
-      {starttime:'10:10', endtime:'12:12'},
-      {task:'Formula engine', starttime:'14:10', endtime:'15:12'},
+      {date: 'Mon. 21 Apr', starttime:'6:10', endtime:'12:12', task:'Formula engine'},
+      {starttime:'12:45', endtime:'18:12', task:'Formula engine'},
+      {starttime:'20:05', endtime:'22:00', task:'Formula demo'},
     ]);
+
+/*    setSheetData([
+      {starttime:'10:10', endtime:'12:12', task:'Formula engine'},
+    ]);*/
+
 
     console.log(getSheetData());
     console.log(JSON.stringify(getSheetData()));
@@ -269,33 +344,37 @@
   </script>
 <style>
   body {max-width: 1200px; padding:2% 5%}
-  input {width: 100px; border: 0; padding:2px 5px; display: block;}
+  input {width: 100px; border: 1px solid #ccc; padding:2px 5px;}
+
+  pre {font-family:monospace; padding: 10px; border: 1px solid #666; background-color: #eee}
+  table {border-collapse: collapse;}
+  h1 {font-size: 1.6em}
+  h3 {font-size: 1.2em}
+
+  /* Sheet */
+  #sheet input {display: block; border: 0px solid gold}
   input.starttime, input.endtime, input.usedtime, #total {text-align: right;}
   input.starttime, input.endtime {width: 60px;}
   input.usedtime {width: 80px;}
   input.category {width: 240px}
-  pre {font-family:monospace; padding: 10px; border: 1px solid #666; background-color: #eee}
-  input[readonly] {background-color: #eee}
-  table {border-collapse: collapse;}
-  td { border: 1px solid #ddd}
-  th {text-align: left; font-weight: normal; font-style: italic; font-size: 0.9em; padding-left: 3px}
-  td {vertical-align: top; padding:0}
-  td pre {margin-top: 0px}
+  input#total {width: 60px}
+  #sheet td { border: 1px solid #ddd; vertical-align: top; padding:0}
+  #sheet th {text-align: left; font-weight: normal; font-style: italic; font-size: 0.9em; padding-left: 3px}
+  #sheet td pre {margin-top: 0px}
+  #sheet input {background-color: white;color: #666;}
+  #sheet input[readonly] {background-color: #eee}
+  #template_row {display: none;}
 
-  input {
-    background-color: white;
-    color: #666;
-  }
-  #template_row {
-    display: none;
-  }
-
-
+  /* task breakdown */
+  #breakdown-output table {}
+  #breakdown-output td {padding-right: 20px}
+  #breakdown-output td:last-child {text-align:right}
+  #breakdown-output hr {height: 1px; border:none; background-color: black}
 </style>
 
 </head>
 <body>
-<h3>Timesheet</h3>
+<h1>Timesheet</h1>
 <table id="sheet">
   <tr>
     <th>Date</th>
@@ -313,7 +392,13 @@
   </tr>
 </table>
 
-<br>
+<p>
 Total time spent: <input id="total"></input>
+</p>
+<br>
+<h3>Task breakdown</h3>
+<div id="breakdown-output"></div>
+<input id="breakdown" type="hidden"></textarea>
+
 </body>
 </html>

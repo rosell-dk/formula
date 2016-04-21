@@ -47,6 +47,9 @@ $(function() {
         // value was not set with an option
         if (this.element.attr('value') != undefined) {
 //          this.value = this.element.attr('value');
+
+          // Not sure if its a good idea to initialize with the value...
+          // This code may go away one day
           this.value = this.element.val();
           if (typeof this.options.deformatter == 'function') {
             this.value = this.options.deformatter(this.value);
@@ -103,6 +106,9 @@ $(function() {
       this._super( key, value );
     },
 
+    hasFormula: function () {
+      return (this.formula instanceof Formula);
+    },
 
     /* Methods relevant for formulas only
        ----------------------------------  */ 

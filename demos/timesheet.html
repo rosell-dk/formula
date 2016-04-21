@@ -65,7 +65,12 @@
       var result=0;
       $jq.each(function() {
 //        result += parseFloat($(this).val());
-        result += numVal(fieldValue($(this)));
+
+        // Beware, it can happen that the cells arent widgetized yet
+        // Only count, when we are sure it has been
+        if ($(this).hasClass('cell')) {
+          result += numVal($(this).cell('getValue'));
+        }
       });
       return result;
     }],
@@ -74,27 +79,37 @@
       var tasks = [];
       for (var i=0; i<$tasks.length; i++) {
         var task = $tasks[i].value;
-        if (task == '') {
-          task = 'Unspecified';
+        if ((task == '') || (task == undefined)) {
+          task = '[unspecified]';
         }
 
         if (taskTimes[task] === undefined) {
           taskTimes[task] = 0;
-          tasks.push(task);
+          if (task != '[unspecified]') {
+            tasks.push(task);
+          }
         }
       }
       for (var i=0; i<$usedTimes.length; i++) {
 //        var formattedTime = $usedTimes[i].value;
         var usedTime = fieldValue($($usedTimes[i]));
-        if (usedTime != '') {
+        if (typeof usedTime == 'number') {
           var task = $($usedTimes[i]).closest('tr').find('[data-colname=task]').val();
           if (task == '') {
-            task = 'Unspecified';
+            task = '[unspecified]';
+//console.log(usedTime);
+//console.log($($usedTimes[i]).cell);
           }
           taskTimes[task] += usedTime;
         }
       }
-      tasks.sort();
+
+      // Right now, tasks are in order of appearance.
+      // Would you rather, they were ordered alphabetically? 
+      // Then do this:
+      //     tasks.sort();
+      
+
       var total = 0;
       var text = '<table>';
       for (var i=0; i<tasks.length; i++) {
@@ -103,10 +118,13 @@
           continue;
         }
         total += taskTimes[task];
-        text += '<tr><td>' + task + '</td><td>' + factoryHoursFormatter(taskTimes[task]) + '</td></tr>';
+        text += '<tr class="task' + ((i==tasks.length-1) ? ' last':'') + '"><td>' + task + '</td><td>' + factoryHoursFormatter(taskTimes[task]) + '</td></tr>';
       }
-      text += '<tr><td colspan=2><hr></td></tr>';
-      text += '<tr><td>Total</td><td>' + factoryHoursFormatter(total) + '</td></tr>';
+      if ((taskTimes['[unspecified]']) && (taskTimes['[unspecified]'] > 0)) {
+        text += '<tr class="unspecified"><td>Unspecified</td><td>' + factoryHoursFormatter(taskTimes['[unspecified]']) + '</td></tr>';
+        total += taskTimes['[unspecified]'];
+      }
+      text += '<tr class="total"><td>Total</td><td>' + factoryHoursFormatter(total) + '</td></tr>';
       text += '</table>';
       $('#breakdown-output').html(text);
       
@@ -182,13 +200,17 @@
 //      value: new SimpleTime(10,10)
     });
 
-    $row.appendTo('#sheet');
-
     $row.find( ".usedtime" ).cell( {
       formula: 'USEDTIME(row:starttime,row:endtime)',
 //      formula: 'SUM(1,2)',
       formatter: factoryHoursFormatter,
     }).attr('disabled', 'disabled');
+
+
+    $row.appendTo('#sheet');
+
+//console.log('addrow');
+//console.log(fieldValue($row.find( ".usedtime" )));
 
     return $row;
   }
@@ -329,6 +351,7 @@
       {date: 'Mon. 21 Apr', starttime:'6:10', endtime:'12:12', task:'Formula engine'},
       {starttime:'12:45', endtime:'18:12', task:'Formula engine'},
       {starttime:'20:05', endtime:'22:00', task:'Formula demo'},
+      {starttime:'22:10', endtime:'22:15', task:''},
     ]);
 
 /*    setSheetData([
@@ -350,6 +373,7 @@
   table {border-collapse: collapse;}
   h1 {font-size: 1.6em}
   h3 {font-size: 1.2em}
+  h3 .subheader {font-size: 0.7em; display: block; padding-top: 4px; font-weight: normal}
 
   /* Sheet */
   #sheet input {display: block; border: 0px solid gold}
@@ -367,9 +391,13 @@
 
   /* task breakdown */
   #breakdown-output table {}
-  #breakdown-output td {padding-right: 20px}
-  #breakdown-output td:last-child {text-align:right}
+  #breakdown-output td {padding: 2px 5px}
+  #breakdown-output td:first-child {padding-right: 20px; padding-left:0}
+  #breakdown-output td:last-child {text-align:right;}
   #breakdown-output hr {height: 1px; border:none; background-color: black}
+  #breakdown-output tr.task.last td {padding-bottom: 7px}
+  #breakdown-output tr.unspecified td {border-top: 1px dotted black; padding-top: 7px; padding-bottom: 7px}
+  #breakdown-output tr.total td {border-bottom: 3px double black;border-top: 1px solid black; padding-top: 7px; padding-bottom: 7px}
 </style>
 
 </head>
@@ -396,7 +424,8 @@
 Total time spent: <input id="total"></input>
 </p>
 <br>
-<h3>Task breakdown</h3>
+<h3>Task breakdown<br><span class="subheader">(in order of appearence)</span></h3>
+
 <div id="breakdown-output"></div>
 <input id="breakdown" type="hidden"></textarea>
 

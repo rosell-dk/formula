@@ -149,9 +149,13 @@
   function setSheet(data) {
     // TODO: remove all rows first
 
-    $( "#total" ).calculatedfield( "option", {
+/*    $( "#total" ).calculatedfield( "option", {
       formula: '""'
-    });      
+    });*/
+
+    // Passivate the field, so it doesn't need to recalculate
+    // each time a dependent field is added
+    $( "#total" ).calculatedfield('unbindReferences');
 
     for (var row=0; row<data.length; row++) {
       var rowData = data[row];
@@ -173,9 +177,14 @@
 
     $('#sheet').find('input').trigger('change');
 
+    // Now, activate it again, and recalculate
+    $( "#total" ).calculatedfield('bindReferences');
+    $( "#total" ).calculatedfield('calc');
+
+/*
     $( "#total" ).calculatedfield( "option", {
       formula: '$SUM(.usedtime)'
-    });      
+    });      */
 
   }
 

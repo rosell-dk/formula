@@ -79,7 +79,7 @@ $(function() {
 
         widget.value = widget.formula.calc();
 
-        if (oldValue != widget.value) {
+        if (oldValue !== widget.value) {
 
           // Refresh. This formats the value and triggers a "calculatedfieldchange" event
           widget._refresh();

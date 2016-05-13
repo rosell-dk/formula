@@ -147,7 +147,7 @@ $(function() {
 
         widget.value = widget.formula.calc();
 
-        if (oldValue != widget.value) {
+        if (oldValue !== widget.value) {
 
           // Refresh. This formats the value and triggers a "calculatedfieldchange" event
           widget._refresh();
@@ -174,7 +174,9 @@ $(function() {
       this._refresh();
     },
 
+    /* Set the 'unformatted' value */
     setValue: function(value) {
+      console.log(value)
       this.value = value;
       this._refresh();
     },
